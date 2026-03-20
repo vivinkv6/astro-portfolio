@@ -1,5 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import { skillCategories } from "@/data/site";
+import type { SkillCategory } from "@/types/content";
 
 const skillCardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -29,10 +30,12 @@ function SkillCard({ skill, index }: { skill: { name: string; icon?: string }; i
   );
 }
 
-export default function SkillsContentExact() {
+export default function SkillsContentExact({ categories }: { categories?: SkillCategory[] }) {
+  const source = categories?.length ? [...categories].reverse() : [...skillCategories].reverse();
+
   return (
     <div className="space-y-16">
-      {skillCategories.map((category) => (
+      {source.map((category) => (
         <div key={category.category}>
           <h3 className="text-neutral mb-8 text-xl font-semibold">
             <span className="text-accent mr-2">//</span>

@@ -1,8 +1,16 @@
 ---
 import ExperienceSectionExact from "@/components/ExperienceSectionExact";
+import { getExperiencePageData, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const [site, page] = await Promise.all([getSiteConfig(), getExperiencePageData()]);
+const seo = resolveSeo(site, page.seo, {
+  title: "Experience | Vivin KV",
+  description: "Professional experience across frontend development, API integration, and technical leadership."
+});
 ---
 
-<BaseLayout title="Experience | Vivin KV" description="Professional experience across frontend development, API integration, and technical leadership.">
-  <ExperienceSectionExact client:visible />
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+  <ExperienceSectionExact experiences={page.experiences} title={page.pageHeading} client:visible />
 </BaseLayout>

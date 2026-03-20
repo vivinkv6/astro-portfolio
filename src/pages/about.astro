@@ -1,14 +1,25 @@
 ---
 import AboutSectionExact from "@/components/AboutSectionExact";
 import SkillsStripExact from "@/components/SkillsStripExact";
-import { skillList } from "@/data/site";
+import { getAboutPageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const [site, aboutPage, skillsPage] = await Promise.all([getSiteConfig(), getAboutPageData(), getSkillsPageData()]);
+const seo = resolveSeo(site, aboutPage.seo, {
+  title: "About | Vivin KV - Full-Stack Developer at SpiderWorks",
+  description: aboutPage.content[0],
+  image: aboutPage.image
+});
 ---
 
 <BaseLayout
-  title="About | Vivin KV - Full-Stack Developer at SpiderWorks"
-  description="Vivin KV is a Full Stack Developer working with Next.js, NestJS, PostgreSQL, Strapi, AI-powered workflows, and modern deployment stacks."
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  extraJs={seo.extraJs}
+  keywords={seo.keywords}
 >
-  <AboutSectionExact client:visible />
-  <SkillsStripExact skills={skillList} className="pt-8 pb-2" client:load />
+  <AboutSectionExact about={aboutPage} client:visible />
+  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} className="pt-8 pb-2" client:load />
 </BaseLayout>

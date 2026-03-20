@@ -3,35 +3,68 @@ import "@/styles/global.css";
 import Footer from "@/components/Footer.astro";
 import Navbar from "@/components/Navbar";
 import ThemeToggle from "@/components/ThemeToggle";
-import { personalInfo } from "@/data/site";
+import { getSiteConfig } from "@/lib/content";
 import { siteUrl } from "@/lib/utils";
+import type { ThemeOption } from "@/types/content";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  extraJs?: string;
+  keywords?: string[];
 }
 
+const site = await getSiteConfig();
 const {
-  title = `${personalInfo.name} | Full-Stack Developer in Kerala, India`,
-  description = `Passionate ${personalInfo.title} in Kerala, India. I build responsive, user-friendly websites with React, NextJS, and NodeJS.`,
-  image = "/assets/images/hero-image.png"
+  title = site.defaultSeo.title || `${site.personName} | ${site.jobTitle}`,
+  description = site.defaultSeo.description || site.tagline,
+  image = site.defaultSeo.ogImage || site.socialImage || "/assets/images/hero-image.png",
+  extraJs,
+  keywords
 } = Astro.props;
+
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const socialImage = new URL(image, siteUrl).toString();
 const pathname = Astro.url.pathname;
+const defaultTheme = site.themes.find((theme) => theme.isDefault)?.name || "dark";
+
+function themeCss(theme: ThemeOption) {
+  if (!theme.tokens) return "";
+
+  return `[data-theme="${theme.name}"] {
+  --p: ${theme.tokens.primary};
+  --pc: ${theme.tokens.primaryContent};
+  --s: ${theme.tokens.secondary};
+  --sc: ${theme.tokens.secondaryContent};
+  --tc: ${theme.tokens.tertiaryContent};
+  --a: ${theme.tokens.accent};
+  --n: ${theme.tokens.neutral};
+  --b: ${theme.tokens.border};
+  --marquee: ${theme.tokens.marquee};
+  --gradient-start: ${theme.tokens.gradientStart};
+  --gradient-mid: ${theme.tokens.gradientMid};
+  --gradient-end: ${theme.tokens.gradientEnd};
+}`;
+}
+
+const dynamicThemeCss = site.themes.map(themeCss).filter(Boolean).join("\n\n");
+const themeInitScript = `(() => {
+  const defaultTheme = ${JSON.stringify(defaultTheme)};
+  const storedTheme = localStorage.getItem("theme") || defaultTheme;
+  document.documentElement.setAttribute("data-theme", storedTheme);
+})();`;
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: personalInfo.name,
-  jobTitle: personalInfo.title,
+  name: site.personName,
+  jobTitle: site.jobTitle,
   description,
-  email: personalInfo.email,
-  telephone: personalInfo.phone,
+  email: site.email,
+  telephone: site.phone,
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Thrissur",
-    addressRegion: "Kerala",
+    addressLocality: site.location,
     addressCountry: "IN"
   },
   url: siteUrl,
@@ -40,13 +73,14 @@ const personSchema = {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme={defaultTheme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow" />
+    {keywords?.length ? <meta name="keywords" content={keywords.join(", ")} /> : null}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -57,13 +91,11 @@ const personSchema = {
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={socialImage} />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script is:inline>
-      (() => {
-        const storedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", storedTheme);
-      })();
-    </script>
+    <link rel="icon" type="image/x-icon" href={site.favicon || "/favicon.ico"} />
+    {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
+    <script is:inline set:html={themeInitScript}></script>
+    {site.gtm?.headScript ? <script is:inline set:html={site.gtm.headScript}></script> : null}
+    {extraJs ? <script is:inline set:html={extraJs}></script> : null}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -73,13 +105,14 @@ const personSchema = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)}></script>
   </head>
   <body>
+    {site.gtm?.bodyScript ? <Fragment set:html={site.gtm.bodyScript} /> : null}
     <header>
-      <Navbar pathname={pathname} client:load />
+      <Navbar pathname={pathname} navItems={site.headerLinks} siteName={site.siteName} client:load />
     </header>
     <main class="min-h-screen">
       <slot />
     </main>
-    <ThemeToggle client:idle />
-    <Footer />
+    <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} client:idle />
+    <Footer site={site} />
   </body>
 </html>

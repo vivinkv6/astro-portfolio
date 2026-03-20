@@ -1,6 +1,19 @@
 ---
 import Logo from "@/components/Logo.astro";
-import { footerLinks, personalInfo, socials } from "@/data/site";
+import type { SiteConfig } from "@/types/content";
+import { Codepen, Facebook, GithubIcon, Instagram, LinkedIn, XIcon } from "@/utils/icons";
+
+const { site } = Astro.props as { site: SiteConfig };
+
+const socialIconMap = {
+  GitHub: GithubIcon,
+  LinkedIn,
+  Facebook,
+  X: XIcon,
+  Instagram,
+  CodePen: Codepen,
+  Email: GithubIcon
+};
 ---
 
 <footer class="bg-secondary relative mt-16 overflow-hidden px-4 py-14 md:p-14">
@@ -8,37 +21,30 @@ import { footerLinks, personalInfo, socials } from "@/data/site";
     <div>
       <h5 class="mb-4 flex items-center gap-2">
         <Logo width={30} height={24} />
-        <span class="text-neutral text-lg font-medium">{personalInfo.name}</span>
+        <span class="text-neutral text-lg font-medium">{site.personName}</span>
       </h5>
       <p class="text-tertiary-content text-sm leading-7">
-        {personalInfo.tagline}. Experienced in both front-end and back-end technologies.
+        {site.footerContent || `${site.tagline}. Experienced in both front-end and back-end technologies.`}
       </p>
-      <address class="text-tertiary-content mt-4 not-italic text-sm">{personalInfo.location}</address>
+      <address class="text-tertiary-content mt-4 not-italic text-sm">{site.location}</address>
     </div>
 
-    <div>
-      <h5 class="text-neutral mb-4 text-lg font-medium">Quick Links</h5>
-      <ul class="space-y-2">
-        {footerLinks.slice(0, 4).map((link) => (
-          <li><a href={link.href} class="text-tertiary-content hover:text-neutral text-sm">{link.title}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div>
-      <h5 class="text-neutral mb-4 text-lg font-medium">More</h5>
-      <ul class="space-y-2">
-        {footerLinks.slice(4).map((link) => (
-          <li><a href={link.href} class="text-tertiary-content hover:text-neutral text-sm">{link.title}</a></li>
-        ))}
-      </ul>
-    </div>
+    {site.footerGroups.slice(0, 2).map((group) => (
+      <div>
+        <h5 class="text-neutral mb-4 text-lg font-medium">{group.label}</h5>
+        <ul class="space-y-2">
+          {group.menu.map((link) => (
+            <li><a href={link.href} class="text-tertiary-content hover:text-neutral text-sm">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    ))}
 
     <div>
       <h5 class="text-neutral mb-4 text-lg font-medium">Connect</h5>
       <ul class="flex gap-4">
-        {socials.map((item) => {
-          const Icon = item.icon;
+        {site.socials.map((item) => {
+          const Icon = socialIconMap[item.label as keyof typeof socialIconMap] || GithubIcon;
 
           return (
             <li>
@@ -60,7 +66,7 @@ import { footerLinks, personalInfo, socials } from "@/data/site";
   </div>
 
   <div class="relative z-10 mt-12 text-center">
-    <p class="text-tertiary-content text-xs">© 2026 {personalInfo.name}. All Rights Reserved.</p>
+    <p class="text-tertiary-content text-xs">© 2026 {site.personName}. All Rights Reserved.</p>
   </div>
 
   <div class="bg-neutral/4 absolute top-1/2 -right-[40%] h-[120dvw] w-[120dvw] -translate-y-1/2 rounded-full p-14 md:top-0 md:-right-[255px] md:-bottom-[450px] md:size-[1030px] md:-translate-y-0 md:p-20">

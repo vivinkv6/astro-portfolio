@@ -1,10 +1,12 @@
 import { motion, useInView, type Variants } from "framer-motion";
 import { useRef } from "react";
 import { experiences } from "@/data/site";
+import type { ExperienceItem } from "@/types/content";
 
 type ExperienceSectionExactProps = {
   limit?: number;
   title?: string;
+  experiences?: ExperienceItem[];
 };
 
 const cardVariants: Variants = {
@@ -16,11 +18,12 @@ const cardVariants: Variants = {
   })
 };
 
-export default function ExperienceSectionExact({ limit, title = "Experience" }: ExperienceSectionExactProps) {
+export default function ExperienceSectionExact({ limit, title = "Experience", experiences: items }: ExperienceSectionExactProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const displayExperiences = typeof limit === "number" ? experiences.slice(0, limit) : experiences;
-  const showViewMore = typeof limit === "number" && experiences.length > limit;
+  const source = items?.length ? items : experiences;
+  const displayExperiences = typeof limit === "number" ? source.slice(0, limit) : source;
+  const showViewMore = typeof limit === "number" && source.length > limit;
 
   return (
     <section id="experience" className="overflow-hidden py-16">

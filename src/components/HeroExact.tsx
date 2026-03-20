@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { personalInfo } from "@/data/site";
 import Ellipse from "@/components/Ellipse";
+import type { HeroData } from "@/types/content";
 
-const roles = ["FULL STACK DEVELOPER", "Vibe Coder", "REACT NATIVE DEV", "TECHNICAL SEO"];
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 
-function useEncryptionRoleSwitcher(): string {
-  const [displayText, setDisplayText] = useState(roles[0]);
+function useEncryptionRoleSwitcher(roles: string[]): string {
+  const [displayText, setDisplayText] = useState(roles[0] || "");
   const [roleIndex, setRoleIndex] = useState(0);
 
   useEffect(() => {
@@ -52,8 +52,14 @@ function useEncryptionRoleSwitcher(): string {
   return displayText;
 }
 
-export default function HeroExact() {
-  const role = useEncryptionRoleSwitcher();
+export default function HeroExact({ hero }: { hero?: HeroData }) {
+  const roles = hero?.roles?.length ? hero.roles : ["FULL STACK DEVELOPER", "Vibe Coder", "REACT NATIVE DEV", "TECHNICAL SEO"];
+  const role = useEncryptionRoleSwitcher(roles);
+  const title = hero?.title || `Hi - I'm ${personalInfo.name}`;
+  const description = hero?.shortDescription || personalInfo.tagline;
+  const image = hero?.image || "/assets/images/hero-image.png";
+  const primaryButton = hero?.primaryButton || { label: "View Projects", href: "/project" };
+  const secondaryButton = hero?.secondaryButton || { label: "View Blogs", href: "/blogs" };
 
   return (
     <section className="bg-primary bg-small-glow bg-small-glow-position md:bg-large-glow-position lg:bg-large-glow flex min-h-[calc(100dvh-4rem)] flex-col justify-center bg-no-repeat">
@@ -61,7 +67,7 @@ export default function HeroExact() {
         <div className="hero-reveal order-2 flex min-h-48 flex-col justify-between md:order-1 lg:min-h-56 lg:max-w-[33.75rem]">
           <h1>
             <span className="hero-reveal hero-delay-1 text-neutral mb-2 block text-3xl font-bold">
-              Hi - I&apos;m {personalInfo.name}
+              {title}
             </span>
             <span className="hero-reveal hero-delay-2 text-accent block text-[1.75rem] font-bold">
               {role}
@@ -69,23 +75,23 @@ export default function HeroExact() {
           </h1>
 
           <h2 className="hero-reveal hero-delay-3 text-neutral mt-3">
-            {personalInfo.tagline}
+            {description}
           </h2>
 
           <div className="hero-reveal hero-delay-4 mt-6 flex flex-wrap gap-6">
             <a
-              href="/project"
-              aria-label="View my projects"
+              href={primaryButton.href}
+              aria-label={primaryButton.label}
               className="bg-accent min-w-32 cursor-pointer rounded-lg px-[14px] py-[10px] text-center text-sm font-medium text-[#00071E] transition-transform duration-200 hover:scale-105 active:scale-95"
             >
-              View Projects
+              {primaryButton.label}
             </a>
             <a
-              href="/blogs"
-              aria-label="View my blogs"
+              href={secondaryButton.href}
+              aria-label={secondaryButton.label}
               className="text-neutral bg-secondary cursor-pointer rounded-lg px-[14px] py-[10px] text-sm transition-transform duration-200 hover:scale-105 active:scale-95"
             >
-              View Blogs
+              {secondaryButton.label}
             </a>
           </div>
         </div>
@@ -93,7 +99,7 @@ export default function HeroExact() {
         <div className="hero-visual-reveal order-1 flex min-h-[18.75rem] items-center justify-center md:order-2 lg:min-h-[35rem]">
           <div className="text-accent relative size-56 sm:size-60 md:size-[20rem] lg:size-[25.75rem]">
             <img
-              src="/assets/images/hero-image.png"
+              src={image}
               alt={`${personalInfo.name} - Full Stack Developer`}
               loading="eager"
               fetchPriority="high"

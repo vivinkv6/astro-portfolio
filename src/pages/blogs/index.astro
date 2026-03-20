@@ -1,11 +1,16 @@
 ---
 import BlogSectionExact from "@/components/BlogSectionExact";
-import { getAllBlogs } from "@/lib/content";
+import { getAllBlogs, getBlogPageData, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const blogs = await getAllBlogs();
+const [site, page, blogs] = await Promise.all([getSiteConfig(), getBlogPageData(), getAllBlogs()]);
+const seo = resolveSeo(site, page.seo, {
+  title: "Blogs | Vivin KV - Tech Articles",
+  description: "Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows."
+});
 ---
 
-<BaseLayout title="Blogs | Vivin KV - Tech Articles" description="Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows.">
-  <BlogSectionExact blogs={blogs} title="Blogs" client:visible />
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+  <BlogSectionExact blogs={blogs} title={page.pageHeading} client:visible />
 </BaseLayout>

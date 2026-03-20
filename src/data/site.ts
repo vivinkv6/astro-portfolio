@@ -133,14 +133,18 @@ export const experiences: ExperienceItem[] = [
 
 export const education: EducationItem[] = [
   {
+    id: 0,
     title: "BSc Computer Science",
     institution: "Sri C Achutha Menon Government College, Thrissur",
+    location: "Thrissur, Kerala",
     period: "2021 - 2024",
     description: "Focused on programming fundamentals, systems thinking, software engineering, and practical web development."
   },
   {
+    id: 1,
     title: "Higher Secondary in Commerce",
     institution: "CNN Higher Secondary School",
+    location: "Thrissur, Kerala",
     period: "2019 - 2021",
     description: "Built the academic foundation that later transitioned into product, systems, and development work."
   }

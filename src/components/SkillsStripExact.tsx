@@ -10,7 +10,7 @@ type SkillsProps = {
 export default function SkillsStripExact({ skills, className = "py-8" }: SkillsProps) {
   return (
     <section id="skills" className={`overflow-hidden ${className}`}>
-      <MarqueeWrapper className="from-primary to-primary via-marquee bg-linear-to-r">
+      <MarqueeWrapper className="from-primary to-primary via-marquee bg-linear-to-r" durationMs={32000}>
         <div className="flex gap-8 lg:gap-24">
           {skills.map(({ name, icon }, index) => (
             <motion.span key={index} whileHover={{ scale: 1.1 }} className="font-inter text-primary-content flex cursor-default items-center text-xs lg:text-base">

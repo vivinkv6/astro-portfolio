@@ -1,5 +1,6 @@
 ---
-import { getAllProjects, getProjectBySlug } from "@/lib/content";
+import { getAllProjects, getProjectBySlug, getProjectPageData, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
@@ -15,9 +16,16 @@ const project = Astro.props.project ?? (await getProjectBySlug(Astro.params.slug
 if (!project) {
   return Astro.redirect("/project");
 }
+
+const [site, projectPage] = await Promise.all([getSiteConfig(), getProjectPageData()]);
+const seo = resolveSeo(site, project.seo || projectPage.seo, {
+  title: `${project.title} | ${site.personName}`,
+  description: project.shortDescription,
+  image: project.cover
+});
 ---
 
-<BaseLayout title={`${project.title} | Vivin KV`} description={project.shortDescription}>
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
   <section class="py-16">
     <div class="section-shell max-w-4xl">
       <div class="mb-8">

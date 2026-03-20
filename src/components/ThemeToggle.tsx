@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { themes } from "@/data/site";
+import type { ThemeOption } from "@/types/content";
+import { CheckIcon, CloseIcon } from "@/utils/icons";
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState("dark");
+type ThemeToggleProps = {
+  themes: ThemeOption[];
+  defaultTheme?: string;
+};
+
+export default function ThemeToggle({ themes, defaultTheme = "dark" }: ThemeToggleProps) {
+  const [theme, setTheme] = useState(defaultTheme);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("theme") || "dark";
+    const stored = window.localStorage.getItem("theme") || defaultTheme;
     setTheme(stored);
     document.documentElement.setAttribute("data-theme", stored);
-  }, []);
+  }, [defaultTheme]);
 
   useEffect(() => {
     function handleClick(event: MouseEvent) {
@@ -31,39 +37,39 @@ export default function ThemeToggle() {
   }
 
   return (
-    <div ref={ref} className="fixed right-6 bottom-5 z-50 md:right-10 md:bottom-10">
-      <button type="button" onClick={() => setOpen((value) => !value)} className="bg-neutral rounded-full p-1.5" aria-label="Choose theme">
-        <div className="bg-primary grid grid-cols-2 gap-1 rounded-full p-2">
-          <span className="h-2.5 w-2.5 rounded-t-full rounded-bl-full bg-[#B13753]" />
-          <span className="h-2.5 w-2.5 rounded-t-full rounded-br-full bg-[#BAA32B]" />
-          <span className="h-2.5 w-2.5 rounded-tl-full rounded-b-full bg-[#3178C6]" />
-          <span className="h-2.5 w-2.5 rounded-tr-full rounded-b-full bg-[#50B359]" />
+    <div ref={ref} className="fixed right-6 bottom-4 z-50 md:right-11 md:bottom-11">
+      <div onClick={() => setOpen((value) => !value)} className="bg-neutral cursor-pointer rounded-full p-1.5 md:p-2" aria-label="Choose theme" role="button" tabIndex={0}>
+        <div className="bg-primary grid grid-cols-2 place-content-center gap-0.5 rounded-full p-1.5 md:p-2">
+          <div className="size-[7px] rounded-t-full rounded-bl-full bg-[#B13753] md:size-[10px]" />
+          <div className="size-[7px] rounded-t-full rounded-br-full bg-[#BAA32B] md:size-[10px]" />
+          <div className="size-[7px] rounded-tl-full rounded-b-full bg-[#3178C6] md:size-[10px]" />
+          <div className="size-[7px] rounded-tr-full rounded-b-full bg-[#50B359] md:size-[10px]" />
         </div>
-      </button>
+      </div>
 
       {open ? (
-        <div className="bg-secondary border-border absolute right-0 bottom-16 min-w-56 space-y-3 rounded-xl border p-4">
-          <div className="text-primary-content border-border flex items-center justify-between border-b pb-3">
-            <span>_select-theme</span>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close theme picker">
-              x
-            </button>
+        <div className="bg-secondary animate-fade-in border-border absolute right-0 bottom-full mb-5 space-y-3 rounded-xl border p-3 md:space-y-4 md:p-5">
+          <div className="text-primary-content border-border flex items-center justify-between border-b pb-3 md:pb-4">
+            <span className="text-sm md:text-base">_select-theme</span>
+            <CloseIcon onClick={() => setOpen(false)} className="h-3 w-3 cursor-pointer md:h-4 md:w-4" />
           </div>
           {themes.map((item) => (
-            <button
+            <div
               key={item.name}
-              type="button"
               onClick={() => changeTheme(item.name)}
-              className="flex w-full items-center justify-between rounded-xl p-3 text-left"
+              className="flex min-w-48 cursor-pointer items-center justify-between rounded-lg p-2 md:min-w-60 md:rounded-xl md:p-4"
               style={{ background: item.colors[0], color: item.colors[1] }}
             >
-              <span>{theme === item.name ? `✓ ${item.label}` : item.label}</span>
-              <span className="flex gap-1">
+              <div className="flex items-end gap-1.5">
+                <CheckIcon className={item.name === theme ? "block" : "hidden"} />
+                <span className="text-sm md:text-base">{item.label}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
                 {item.colors.slice(1).map((color) => (
-                  <span key={`${item.name}-${color}`} className="h-3 w-3 rounded-full" style={{ background: color }} />
+                  <div key={`${item.name}-${color}`} className="size-2 rounded-full md:size-3" style={{ background: color }} />
                 ))}
-              </span>
-            </button>
+              </div>
+            </div>
           ))}
         </div>
       ) : null}

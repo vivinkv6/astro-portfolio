@@ -1,11 +1,16 @@
 ---
 import ProjectSectionExact from "@/components/ProjectSectionExact";
-import { getAllProjects } from "@/lib/content";
+import { getAllProjects, getProjectPageData, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const projects = await getAllProjects();
+const [site, page, projects] = await Promise.all([getSiteConfig(), getProjectPageData(), getAllProjects()]);
+const seo = resolveSeo(site, page.seo, {
+  title: "Project | Vivin KV - Portfolio",
+  description: "Explore the portfolio projects, product experiments, and client work delivered by Vivin KV."
+});
 ---
 
-<BaseLayout title="Project | Vivin KV - Portfolio" description="Explore the portfolio projects, product experiments, and client work delivered by Vivin KV.">
-  <ProjectSectionExact projects={projects} title="Project" client:visible />
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+  <ProjectSectionExact projects={projects} title={page.pageHeading} client:visible />
 </BaseLayout>

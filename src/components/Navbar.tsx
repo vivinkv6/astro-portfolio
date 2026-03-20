@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const navItems = [
+const defaultNavItems = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Education", href: "/education" },
@@ -30,7 +30,15 @@ function LogoMark() {
   );
 }
 
-export default function Navbar({ pathname }: { pathname: string }) {
+export default function Navbar({
+  pathname,
+  navItems = defaultNavItems,
+  siteName = "Vivin KV"
+}: {
+  pathname: string;
+  navItems?: { label: string; href: string }[];
+  siteName?: string;
+}) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -45,7 +53,7 @@ export default function Navbar({ pathname }: { pathname: string }) {
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4">
         <a href="/" className="flex items-center gap-2">
           <LogoMark />
-          <span className="text-primary-content font-semibold whitespace-nowrap">Vivin KV</span>
+          <span className="text-primary-content font-semibold whitespace-nowrap">{siteName}</span>
         </a>
 
         <button

@@ -5,18 +5,31 @@ import ExperienceSectionExact from "@/components/ExperienceSectionExact";
 import HeroExact from "@/components/HeroExact";
 import ProjectSectionExact from "@/components/ProjectSectionExact";
 import SkillsStripExact from "@/components/SkillsStripExact";
-import { skillList } from "@/data/site";
-import { getAllBlogs, getAllProjects } from "@/lib/content";
+import { getAboutPageData, getAllBlogs, getAllProjects, getExperiencePageData, getHomePageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const [projects, blogs] = await Promise.all([getAllProjects(), getAllBlogs()]);
+const [site, homePage, aboutPage, experiencePage, skillsPage, projects, blogs] = await Promise.all([
+  getSiteConfig(),
+  getHomePageData(),
+  getAboutPageData(),
+  getExperiencePageData(),
+  getSkillsPageData(),
+  getAllProjects(),
+  getAllBlogs()
+]);
+const seo = resolveSeo(site, homePage.seo, {
+  title: `${site.personName} | Full-Stack Developer in Kerala, India`,
+  description: site.tagline,
+  image: homePage.hero.image
+});
 ---
 
-<BaseLayout>
-  <HeroExact client:load />
-  <SkillsStripExact skills={skillList} client:load />
-  <AboutSectionExact client:visible />
-  <ExperienceSectionExact limit={2} client:visible />
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+  <HeroExact hero={homePage.hero} client:load />
+  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} client:load />
+  <AboutSectionExact about={aboutPage} client:visible />
+  <ExperienceSectionExact experiences={experiencePage.experiences} limit={2} title={experiencePage.pageHeading} client:visible />
   <ProjectSectionExact projects={projects} limit={3} title="Latest Projects" client:visible />
   <BlogSectionExact blogs={blogs} limit={3} title="Latest Blogs" client:visible />
 </BaseLayout>

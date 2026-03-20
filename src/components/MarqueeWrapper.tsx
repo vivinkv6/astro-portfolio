@@ -4,18 +4,19 @@ import { useEffect, useRef } from "react";
 type MarqueeWrapperProps = {
   children: ReactNode;
   className?: string;
+  durationMs?: number;
 };
 
-const marqueeAnimation = (element: HTMLElement, elementWidth: number, windowWidth: number) => {
+const marqueeAnimation = (element: HTMLElement, elementWidth: number, windowWidth: number, durationMs: number) => {
   return element.animate([{ transform: "translateX(0)" }, { transform: `translateX(${windowWidth - elementWidth}px)` }], {
-    duration: 20000,
+    duration: durationMs,
     easing: "linear",
     direction: "alternate",
     iterations: Infinity
   });
 };
 
-export default function MarqueeWrapper({ children, className = "" }: MarqueeWrapperProps) {
+export default function MarqueeWrapper({ children, className = "", durationMs = 20000 }: MarqueeWrapperProps) {
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function MarqueeWrapper({ children, className = "" }: MarqueeWrap
     const runAnimation = () => {
       animation?.cancel();
       const elementWidth = element.getBoundingClientRect().width;
-      animation = marqueeAnimation(element, elementWidth, window.innerWidth);
+      animation = marqueeAnimation(element, elementWidth, window.innerWidth, durationMs);
     };
 
     runAnimation();
@@ -36,7 +37,7 @@ export default function MarqueeWrapper({ children, className = "" }: MarqueeWrap
       animation?.cancel();
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [durationMs]);
 
   return (
     <div className={`relative overflow-x-hidden ${className}`}>

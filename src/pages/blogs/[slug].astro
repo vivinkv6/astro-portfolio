@@ -1,5 +1,6 @@
 ---
-import { getAllBlogs, getBlogBySlug } from "@/lib/content";
+import { getAllBlogs, getBlogBySlug, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
@@ -16,9 +17,16 @@ const blog = Astro.props.blog ?? (await getBlogBySlug(Astro.params.slug!));
 if (!blog) {
   return Astro.redirect("/blogs");
 }
+
+const site = await getSiteConfig();
+const seo = resolveSeo(site, blog.seo, {
+  title: `${blog.title} | ${site.personName}`,
+  description: blog.content,
+  image: blog.bannerImage || blog.coverImage
+});
 ---
 
-<BaseLayout title={`${blog.title} | Vivin KV`} description={blog.content}>
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
   <article class="py-16">
     <div class="section-shell max-w-4xl">
       <header class="mb-8">
@@ -34,26 +42,25 @@ if (!blog) {
 
       <div class="overflow-hidden rounded-3xl">
         <img
-          src={blog.coverImage || "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop"}
+          src={blog.bannerImage || blog.coverImage || "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop"}
           alt={blog.title}
           class="aspect-video w-full object-cover"
         />
       </div>
 
-      <div class="rich-copy mt-12 space-y-6">
-        <p>{blog.content}</p>
-        <h2>Why It Matters</h2>
-        <p>
-          The Astro migration keeps this content presentation fast by default while still leaving room for Strapi-backed publishing and client-side interactivity only where it adds value.
-        </p>
-        <h2>Key Takeaways</h2>
-        <ul>
-          <li>Prefer static output for durable content pages.</li>
-          <li>Keep JavaScript focused on truly interactive experiences.</li>
-          <li>Preserve SEO and content structure during framework migrations.</li>
-          <li>Use a clean data layer so local content and Strapi can coexist during transition.</li>
-        </ul>
-      </div>
+      {blog.contentHtml ? (
+        <div class="rich-copy mt-12 space-y-6" set:html={blog.contentHtml}></div>
+      ) : (
+        <div class="rich-copy mt-12 space-y-10">
+          {blog.sections?.map((section) => (
+            <section class="space-y-5">
+              {section.title ? <h2>{section.title}</h2> : null}
+              {section.image ? <img src={section.image} alt={section.title || blog.title} class="aspect-video w-full rounded-3xl object-cover" /> : null}
+              <div class="space-y-4" set:html={section.contentHtml}></div>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   </article>
 </BaseLayout>

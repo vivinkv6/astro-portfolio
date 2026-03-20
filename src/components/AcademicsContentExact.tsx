@@ -1,5 +1,6 @@
 import { motion, useInView, type Variants } from "framer-motion";
 import { useRef } from "react";
+import type { AcademicJourneyItem } from "@/types/content";
 
 const academicsData = [
   {
@@ -61,15 +62,16 @@ const cardVariants: Variants = {
   })
 };
 
-export default function AcademicsContentExact() {
+export default function AcademicsContentExact({ journey }: { journey?: AcademicJourneyItem[] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const source = journey?.length ? journey : academicsData.map((item) => ({ title: item.title, date: item.date, description: item.description }));
 
   return (
     <div ref={ref} className="relative">
       <div className="bg-border absolute top-0 left-4 h-full w-0.5 md:left-1/2" />
 
-      {academicsData.map((item, index) => (
+      {source.map((item, index) => (
         <motion.div
           key={index}
           custom={index}

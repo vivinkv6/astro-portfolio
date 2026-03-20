@@ -1,0 +1,19 @@
+---
+import EducationContentExact from "@/components/EducationContentExact";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Education | Vivin KV - Academic Background"
+  description="Vivin KV's educational background includes BSc Computer Science from Sri C Achutha Menon Government College Thrissur (2021-2024) and Commerce from CNN Higher Secondary School (2019-2021)."
+>
+  <section class="overflow-hidden py-16">
+    <div class="mx-auto max-w-[1200px] px-4">
+      <h2 class="text-neutral mb-12 text-3xl font-bold">
+        <span class="text-accent mr-2">//</span>
+        Education
+      </h2>
+      <EducationContentExact client:visible />
+    </div>
+  </section>
+</BaseLayout>

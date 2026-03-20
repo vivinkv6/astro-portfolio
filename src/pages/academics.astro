@@ -1,0 +1,19 @@
+---
+import AcademicsContentExact from "@/components/AcademicsContentExact";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Academics | Vivin KV - College Journey"
+  description="A chronicle of Vivin KV's academic journey at Sri C Achutha Menon Government College, including technical leadership at TinkerHub GCT, achievements, and memorable events."
+>
+  <section class="overflow-hidden py-16">
+    <div class="mx-auto max-w-[1200px] px-4">
+      <h2 class="text-neutral mb-12 text-3xl font-bold">
+        <span class="text-accent mr-2">//</span>
+        Academic Journey
+      </h2>
+      <AcademicsContentExact client:visible />
+    </div>
+  </section>
+</BaseLayout>

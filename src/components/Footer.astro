@@ -1,0 +1,71 @@
+---
+import Logo from "@/components/Logo.astro";
+import { footerLinks, personalInfo, socials } from "@/data/site";
+---
+
+<footer class="bg-secondary relative mt-16 overflow-hidden px-4 py-14 md:p-14">
+  <div class="relative z-10 mx-auto grid max-w-[1200px] gap-12 md:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <h5 class="mb-4 flex items-center gap-2">
+        <Logo width={30} height={24} />
+        <span class="text-neutral text-lg font-medium">{personalInfo.name}</span>
+      </h5>
+      <p class="text-tertiary-content text-sm leading-7">
+        {personalInfo.tagline}. Experienced in both front-end and back-end technologies.
+      </p>
+      <address class="text-tertiary-content mt-4 not-italic text-sm">{personalInfo.location}</address>
+    </div>
+
+    <div>
+      <h5 class="text-neutral mb-4 text-lg font-medium">Quick Links</h5>
+      <ul class="space-y-2">
+        {footerLinks.slice(0, 4).map((link) => (
+          <li><a href={link.href} class="text-tertiary-content hover:text-neutral text-sm">{link.title}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h5 class="text-neutral mb-4 text-lg font-medium">More</h5>
+      <ul class="space-y-2">
+        {footerLinks.slice(4).map((link) => (
+          <li><a href={link.href} class="text-tertiary-content hover:text-neutral text-sm">{link.title}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h5 class="text-neutral mb-4 text-lg font-medium">Connect</h5>
+      <ul class="flex gap-4">
+        {socials.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <li>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={item.label}
+                title={item.label}
+                class="text-tertiary-content hover:text-neutral inline-flex transition-transform duration-300 hover:-translate-y-0.5"
+              >
+                <Icon />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </div>
+
+  <div class="relative z-10 mt-12 text-center">
+    <p class="text-tertiary-content text-xs">© 2026 {personalInfo.name}. All Rights Reserved.</p>
+  </div>
+
+  <div class="bg-neutral/4 absolute top-1/2 -right-[40%] h-[120dvw] w-[120dvw] -translate-y-1/2 rounded-full p-14 md:top-0 md:-right-[255px] md:-bottom-[450px] md:size-[1030px] md:-translate-y-0 md:p-20">
+    <div class="bg-neutral/4 size-full rounded-full p-14 md:p-20">
+      <div class="bg-neutral/5 size-full rounded-full"></div>
+    </div>
+  </div>
+</footer>

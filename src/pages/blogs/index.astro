@@ -1,0 +1,11 @@
+---
+import BlogSectionExact from "@/components/BlogSectionExact";
+import { getAllBlogs } from "@/lib/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const blogs = await getAllBlogs();
+---
+
+<BaseLayout title="Blogs | Vivin KV - Tech Articles" description="Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows.">
+  <BlogSectionExact blogs={blogs} title="Blogs" client:visible />
+</BaseLayout>

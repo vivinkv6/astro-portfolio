@@ -1,0 +1,31 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import type { Testimonial } from "@/types/content";
+
+interface Props {
+  testimonials: Testimonial[];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<section class="py-16">
+  <div class="section-shell">
+    <SectionHeading title="Testimonials" subtitle="Social proof and feedback carried over from the current portfolio content set." />
+    <div class="grid gap-6 lg:grid-cols-2">
+      {testimonials.map((item) => (
+        <article class="bg-secondary border-border rounded-2xl border p-6">
+          <div class="flex items-center gap-4">
+            <img src={item.image} alt={item.name} class="h-14 w-14 rounded-full object-cover" />
+            <div>
+              <h3 class="text-neutral font-semibold">{item.name}</h3>
+              <p class="text-tertiary-content text-sm">{item.title}</p>
+            </div>
+          </div>
+          <p class="text-tertiary-content mt-5 leading-8">{item.feedback}</p>
+          <p class="text-accent mt-4 text-sm">{"★".repeat(item.stars)}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

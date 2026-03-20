@@ -1,0 +1,11 @@
+---
+import ProjectSectionExact from "@/components/ProjectSectionExact";
+import { getAllProjects } from "@/lib/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const projects = await getAllProjects();
+---
+
+<BaseLayout title="Project | Vivin KV - Portfolio" description="Explore the portfolio projects, product experiments, and client work delivered by Vivin KV.">
+  <ProjectSectionExact projects={projects} title="Project" client:visible />
+</BaseLayout>

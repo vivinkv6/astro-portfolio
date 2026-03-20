@@ -1,0 +1,22 @@
+---
+import AboutSectionExact from "@/components/AboutSectionExact";
+import BlogSectionExact from "@/components/BlogSectionExact";
+import ExperienceSectionExact from "@/components/ExperienceSectionExact";
+import HeroExact from "@/components/HeroExact";
+import ProjectSectionExact from "@/components/ProjectSectionExact";
+import SkillsStripExact from "@/components/SkillsStripExact";
+import { skillList } from "@/data/site";
+import { getAllBlogs, getAllProjects } from "@/lib/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const [projects, blogs] = await Promise.all([getAllProjects(), getAllBlogs()]);
+---
+
+<BaseLayout>
+  <HeroExact client:load />
+  <SkillsStripExact skills={skillList} client:load />
+  <AboutSectionExact client:visible />
+  <ExperienceSectionExact limit={2} client:visible />
+  <ProjectSectionExact projects={projects} limit={3} title="Latest Projects" client:visible />
+  <BlogSectionExact blogs={blogs} limit={3} title="Latest Blogs" client:visible />
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import type { SkillCategory } from "@/types/content";
+
+interface Props {
+  categories: SkillCategory[];
+}
+
+const { categories } = Astro.props;
+---
+
+<section class="py-16">
+  <div class="section-shell">
+    <SectionHeading title="Skills" subtitle="A practical stack across frontend, backend, CMS, deployment, and AI-assisted workflows." />
+    <div class="space-y-16">
+      {categories.map((category) => (
+        <div>
+          <h3 class="text-neutral mb-8 text-xl font-semibold">
+            <span class="text-accent mr-2">//</span>
+            {category.category}
+          </h3>
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {category.skills.map((skill) => (
+              <div class="bg-secondary border-border rounded-xl border p-6 text-center">
+                <div class="text-accent mb-3 flex justify-center">
+                  {skill.icon ? <img src={skill.icon} alt="" class="h-12 w-12" /> : <span class="text-4xl font-bold">{skill.name[0]}</span>}
+                </div>
+                <p class="text-neutral text-sm font-medium">{skill.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+---
+import { getAllProjects, getProjectBySlug } from "@/lib/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project }
+  }));
+}
+
+const project = Astro.props.project ?? (await getProjectBySlug(Astro.params.slug!));
+
+if (!project) {
+  return Astro.redirect("/project");
+}
+---
+
+<BaseLayout title={`${project.title} | Vivin KV`} description={project.shortDescription}>
+  <section class="py-16">
+    <div class="section-shell max-w-4xl">
+      <div class="mb-8">
+        <a href="/project" class="text-accent text-sm">← Back to projects</a>
+        <p class="text-accent mt-5 text-xs uppercase tracking-[0.24em]">{project.type}</p>
+        <h1 class="text-neutral mt-2 text-4xl font-bold">{project.title}</h1>
+        <p class="text-primary-content mt-4 text-lg leading-8">{project.shortDescription}</p>
+      </div>
+      <div class="bg-secondary border-border overflow-hidden rounded-3xl border">
+        <img src={project.cover} alt={project.title} class="aspect-[16/9] w-full object-cover" />
+      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        {project.livePreview ? <a href={project.livePreview} target="_blank" rel="noreferrer" class="bg-accent rounded-lg px-5 py-3 text-sm font-medium text-[#00071E]">Live preview</a> : null}
+        {project.githubLink ? <a href={project.githubLink} target="_blank" rel="noreferrer" class="bg-secondary text-neutral rounded-lg px-5 py-3 text-sm">GitHub</a> : null}
+      </div>
+      <div class="rich-copy mt-10 space-y-6">
+        <p>{project.longDescription || project.shortDescription}</p>
+        {project.technologies?.length ? (
+          <>
+            <h2>Technology Stack</h2>
+            <ul>
+              {project.technologies.map((tech) => <li>{tech}</li>)}
+            </ul>
+          </>
+        ) : null}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

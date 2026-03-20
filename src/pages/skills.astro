@@ -1,0 +1,19 @@
+---
+import SkillsContentExact from "@/components/SkillsContentExact";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Skills | Vivin KV - Technologies"
+  description="Vivin KV is proficient in Next.js, React.js, TypeScript, Node.js, Express.js, MongoDB, PostgreSQL, Tailwind CSS, Git, and more."
+>
+  <section class="overflow-hidden py-16">
+    <div class="mx-auto max-w-[1200px] px-4">
+      <h2 class="text-neutral mb-12 text-3xl font-bold">
+        <span class="text-accent mr-2">//</span>
+        Skills
+      </h2>
+      <SkillsContentExact client:visible />
+    </div>
+  </section>
+</BaseLayout>

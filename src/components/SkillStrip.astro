@@ -1,0 +1,24 @@
+---
+import type { SkillItem } from "@/types/content";
+
+interface Props {
+  skills: SkillItem[];
+}
+
+const { skills } = Astro.props;
+---
+
+<section class="py-10">
+  <div class="section-shell">
+    <div class="bg-marquee/30 border-border hide-scrollbar overflow-x-auto rounded-2xl border px-5 py-4">
+      <div class="flex min-w-max gap-3">
+        {skills.map((skill) => (
+          <div class="pill text-neutral inline-flex items-center gap-3 whitespace-nowrap">
+            {skill.icon ? <img src={skill.icon} alt="" class="h-5 w-5" /> : null}
+            <span class="text-sm">{skill.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

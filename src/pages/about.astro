@@ -1,0 +1,14 @@
+---
+import AboutSectionExact from "@/components/AboutSectionExact";
+import SkillsStripExact from "@/components/SkillsStripExact";
+import { skillList } from "@/data/site";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="About | Vivin KV - Full-Stack Developer at SpiderWorks"
+  description="Vivin KV is a Full Stack Developer working with Next.js, NestJS, PostgreSQL, Strapi, AI-powered workflows, and modern deployment stacks."
+>
+  <AboutSectionExact client:visible />
+  <SkillsStripExact skills={skillList} className="pt-8 pb-2" client:load />
+</BaseLayout>

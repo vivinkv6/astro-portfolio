@@ -1,0 +1,13 @@
+{
+  "priority": 3,
+  "title": "Project Epsilon",
+  "shortDescription": "A collection of engaging coding challenges designed to help developers improve their ReactJS skills by writing functional business logic. Your task is to make it functional by writing business logic, to improve your frontend skills",
+  "longDescription": "An interactive learning platform featuring a series of carefully crafted React coding challenges. Each challenge is designed to test and improve your understanding of React concepts, from basic component creation to advanced state management. Perfect for developers looking to strengthen their React skills through hands-on practice and real-world scenarios.",
+  "cover": "https://res.cloudinary.com/dyvkdwzcj/image/upload/v1656971294/waitlist-template_qr4l9k.png",
+  "type": "Free 🔥",
+  "livePreview": "https://example.com/epsilon",
+  "githubLink": "https://github.com/example/ReactJS-Coding-Challenges",
+  "githubStars": "40 Stars",
+  "numberOfSales": "138 Sales",
+  "technologies": ["React", "JavaScript", "Node.js"]
+}

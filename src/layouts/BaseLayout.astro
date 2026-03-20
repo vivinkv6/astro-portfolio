@@ -1,0 +1,85 @@
+---
+import "@/styles/global.css";
+import Footer from "@/components/Footer.astro";
+import Navbar from "@/components/Navbar";
+import ThemeToggle from "@/components/ThemeToggle";
+import { personalInfo } from "@/data/site";
+import { siteUrl } from "@/lib/utils";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = `${personalInfo.name} | Full-Stack Developer in Kerala, India`,
+  description = `Passionate ${personalInfo.title} in Kerala, India. I build responsive, user-friendly websites with React, NextJS, and NodeJS.`,
+  image = "/assets/images/hero-image.png"
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const socialImage = new URL(image, siteUrl).toString();
+const pathname = Astro.url.pathname;
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: personalInfo.name,
+  jobTitle: personalInfo.title,
+  description,
+  email: personalInfo.email,
+  telephone: personalInfo.phone,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Thrissur",
+    addressRegion: "Kerala",
+    addressCountry: "IN"
+  },
+  url: siteUrl,
+  image: socialImage
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={socialImage} />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImage} />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script is:inline>
+      (() => {
+        const storedTheme = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", storedTheme);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)}></script>
+  </head>
+  <body>
+    <header>
+      <Navbar pathname={pathname} client:load />
+    </header>
+    <main class="min-h-screen">
+      <slot />
+    </main>
+    <ThemeToggle client:idle />
+    <Footer />
+  </body>
+</html>

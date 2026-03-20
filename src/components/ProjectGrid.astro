@@ -1,0 +1,28 @@
+---
+import ProjectCard from "@/components/ProjectCard.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import type { Project } from "@/types/content";
+
+interface Props {
+  projects: Project[];
+  title?: string;
+  limit?: number;
+}
+
+const { projects, title = "Latest Projects", limit } = Astro.props;
+const displayProjects = typeof limit === "number" ? projects.slice(0, limit) : projects;
+---
+
+<section class="py-12">
+  <div class="section-shell">
+    <SectionHeading title={title} />
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {displayProjects.map((project) => <ProjectCard project={project} />)}
+    </div>
+    {typeof limit === "number" && projects.length > limit ? (
+      <div class="mt-8 text-center">
+        <a href="/project" class="text-accent text-sm font-medium">View More Projects →</a>
+      </div>
+    ) : null}
+  </div>
+</section>

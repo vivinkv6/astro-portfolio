@@ -1,0 +1,11 @@
+{
+  "priority": 1,
+  "title": "Color Contrast Collection",
+  "shortDescription": "Curated Background with Text colors contrast, help you to pick best contrast for your websites",
+  "longDescription": "A comprehensive collection of carefully curated color combinations designed to help developers and designers choose the perfect text and background color contrasts for their websites. This tool ensures accessibility compliance while maintaining aesthetic appeal, making it easier to create visually stunning and readable web interfaces.",
+  "cover": "https://res.cloudinary.com/dyvkdwzcj/image/upload/v1645090814/color-contrast_n598kw.png",
+  "livePreview": "https://example.com/alpha",
+  "type": "Client Work 🙍‍♂️",
+  "siteAge": "1 month old",
+  "technologies": ["React", "TypeScript", "Tailwind CSS"]
+}

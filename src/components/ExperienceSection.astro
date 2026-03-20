@@ -1,0 +1,33 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import { experiences } from "@/data/site";
+---
+
+<section id="experience" class="py-16">
+  <div class="section-shell">
+    <SectionHeading title="Experience" />
+    <div class="space-y-8">
+      {experiences.map((item) => (
+        <article class="bg-secondary border-border glow-panel rounded-xl border p-6">
+          <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div class="flex-1">
+              <h3 class="text-accent text-xl font-semibold">{item.role}</h3>
+              <a href={item.link} target="_blank" rel="noreferrer" class="text-primary-content hover:text-accent text-lg">
+                {item.company}
+              </a>
+              <p class="text-tertiary-content mt-1 text-sm">{item.date}</p>
+            </div>
+          </div>
+          <ul class="mt-6 space-y-3">
+            {item.responsibilities.map((resp) => (
+              <li class="text-tertiary-content flex items-start gap-3 text-sm leading-relaxed">
+                <span class="bg-accent mt-2 block h-2 w-2 rounded-full"></span>
+                <span>{resp}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

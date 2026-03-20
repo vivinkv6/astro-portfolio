@@ -1,0 +1,38 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+---
+
+<section id="about" class="bg-secondary py-16">
+  <div class="section-shell">
+    <SectionHeading title="About Me" />
+    <div class="grid gap-8 md:grid-cols-2">
+      <div class="space-y-6 text-lg leading-relaxed">
+        <p class="text-primary-content">
+          I&apos;m a Full Stack Developer at SpiderWorks Technologies, working with Next.js, NestJS, PostgreSQL, and Strapi to build production-ready web applications and internal tools.
+        </p>
+        <p class="text-primary-content">
+          My work centers on API integration, backend coordination, feature delivery, and building systems that stay maintainable as they grow.
+        </p>
+        <p class="text-primary-content">
+          I also explore AI-powered development, technical SEO, and self-hosted deployment workflows to understand the full lifecycle of modern web products.
+        </p>
+      </div>
+
+      <div class="flex flex-col items-center gap-6">
+        <div class="glow-panel bg-primary relative aspect-square w-full max-w-sm overflow-hidden rounded-lg">
+          <img src="/assets/images/profile-image.png" alt="Vivin KV profile" class="h-full w-full object-contain" />
+        </div>
+        <div class="grid w-full max-w-sm grid-cols-2 gap-4">
+          <div class="bg-primary border-border rounded-lg border p-4 text-center">
+            <h3 class="text-accent text-3xl font-bold">2+</h3>
+            <p class="text-tertiary-content text-sm">Years Experience</p>
+          </div>
+          <div class="bg-primary border-border rounded-lg border p-4 text-center">
+            <h3 class="text-accent text-3xl font-bold">10+</h3>
+            <p class="text-tertiary-content text-sm">Projects Completed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

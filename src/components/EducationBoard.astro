@@ -1,0 +1,42 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import { academics, education } from "@/data/site";
+---
+
+<section class="py-16">
+  <div class="section-shell">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <div>
+        <SectionHeading title="Education" />
+        <div class="space-y-5">
+          {education.map((item) => (
+            <article class="bg-secondary border-border rounded-2xl border p-6">
+              <p class="text-accent text-xs uppercase tracking-[0.24em]">{item.period}</p>
+              <h3 class="text-neutral mt-2 text-xl font-semibold">{item.title}</h3>
+              <p class="text-primary-content mt-1">{item.institution}</p>
+              <p class="text-tertiary-content mt-3 leading-7">{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+      <div>
+        <SectionHeading title="Academics" />
+        <div class="space-y-5">
+          {academics.map((item) => (
+            <article class="bg-secondary border-border rounded-2xl border p-6">
+              <h3 class="text-neutral text-xl font-semibold">{item.title}</h3>
+              <ul class="mt-4 space-y-3">
+                {item.points.map((point) => (
+                  <li class="text-tertiary-content flex items-start gap-3">
+                    <span class="bg-accent mt-2 block h-2 w-2 rounded-full"></span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

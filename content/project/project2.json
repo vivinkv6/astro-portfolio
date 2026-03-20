@@ -1,0 +1,11 @@
+{
+  "priority": 2,
+  "title": "Codevertiser",
+  "shortDescription": "A programming related article site to share my learnings",
+  "longDescription": "A modern blogging platform built for developers to share programming tutorials, coding tips, and technical articles. Features include syntax highlighting, responsive design, fast loading times, and an intuitive reading experience. Perfect for developers who want to document their learning journey and share knowledge with the community.",
+  "cover": "https://res.cloudinary.com/dyvkdwzcj/image/upload/v1656970810/Codevertiser_xlxdje.png",
+  "livePreview": "https://example.com/beta",
+  "visitors": "8K Visitors",
+  "earned": "$400 Earned",
+  "technologies": ["Next.js", "TypeScript", "Tailwind CSS"]
+}

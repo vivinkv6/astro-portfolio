@@ -148,7 +148,10 @@ export async function fetchSiteConfig(): Promise<Partial<SiteConfig> | null> {
   const general = getSingleItem(generalResponse);
   const menu = getSingleItem(menuResponse);
   const themes = Array.isArray(themesResponse?.data)
-    ? themesResponse.data.map(mapTheme).filter((theme): theme is ThemeOption => theme !== null)
+    ? themesResponse.data
+        .filter((theme: any) => theme?.hide_theme !== true)
+        .map(mapTheme)
+        .filter((theme): theme is ThemeOption => theme !== null)
     : [];
 
   if (!general && !menu && themes.length === 0) return null;

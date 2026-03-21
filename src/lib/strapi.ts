@@ -187,7 +187,22 @@ export function normalizeTags(value: any) {
   }
 
   if (typeof value === "string") {
-    return splitKeywords(value);
+    const trimmed = value.trim();
+
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map((item) => (typeof item === "string" ? item.trim() : ""))
+            .filter(Boolean);
+        }
+      } catch {
+        // Fall back to string cleanup below when tags are not valid JSON.
+      }
+    }
+
+    return splitKeywords(trimmed.replace(/^\[|\]$/g, "").replace(/["']/g, ""));
   }
 
   return [];

@@ -10,7 +10,13 @@ interface Props {
 }
 
 const { projects, title = "Latest Projects", limit } = Astro.props;
-const displayProjects = typeof limit === "number" ? projects.slice(0, limit) : projects;
+const orderedProjects = [...projects].sort((left, right) => {
+  const priorityDiff = left.priority - right.priority;
+  if (priorityDiff !== 0) return priorityDiff;
+
+  return +new Date(right.createdAt || 0) - +new Date(left.createdAt || 0);
+});
+const displayProjects = typeof limit === "number" ? orderedProjects.slice(0, limit) : orderedProjects;
 ---
 
 <section class="py-12">

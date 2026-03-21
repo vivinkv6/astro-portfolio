@@ -1,4 +1,4 @@
-import type { ExperienceItem, ExperiencePageData } from "@/types/content";
+import type { ExperienceItem, ExperiencePageData, PaginatedResult } from "@/types/content";
 import {
   formatDateRange,
   getCollectionItems,
@@ -67,5 +67,46 @@ export async function fetchExperiencePage(): Promise<ExperiencePageData | null> 
     pageHeading: page?.page_heading || "Experience",
     experiences,
     seo: normalizeSeo(page?.seo)
+  };
+}
+
+export async function fetchExperiencesPaginated(page: number, pageSize: number): Promise<PaginatedResult<ExperienceItem> | null> {
+  if (!isStrapiConfigured) return null;
+
+  const client = getStrapiClient();
+  if (!client) return null;
+
+  const response = await safeStrapi(
+    () =>
+      client.collection("experiences").find({
+        sort: ["priority:asc", "start_date:desc"],
+        pagination: {
+          page,
+          pageSize
+        },
+        populate: {
+          company: {
+            populate: {
+              logo: true
+            }
+          }
+        }
+      }),
+    null
+  );
+
+  if (!response) return null;
+
+  const items = getCollectionItems<any>(response).map(mapExperience);
+  const meta = (response as any)?.meta?.pagination;
+
+  return {
+    items,
+    pagination: {
+      page: meta?.page || page,
+      pageSize: meta?.pageSize || pageSize,
+      total: meta?.total || items.length,
+      pageCount: meta?.pageCount || 1
+    }
   };
 }

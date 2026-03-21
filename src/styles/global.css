@@ -297,3 +297,152 @@ section {
   transform-origin: center;
   animation: hero-orbit-rotate 6s ease-in-out infinite alternate;
 }
+
+.error-shell {
+  backdrop-filter: blur(16px);
+}
+
+.error-aurora {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(72px);
+  opacity: 0.8;
+  animation: error-drift 10s ease-in-out infinite alternate;
+}
+
+.error-aurora-left {
+  top: 2rem;
+  left: 8%;
+  width: 15rem;
+  height: 15rem;
+  background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+}
+
+.error-aurora-right {
+  right: 7%;
+  bottom: 1rem;
+  width: 18rem;
+  height: 18rem;
+  background: color-mix(in oklab, var(--color-secondary-content) 22%, transparent);
+  animation-duration: 13s;
+}
+
+.error-display {
+  background-image:
+    radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--color-accent) 9%, transparent), transparent 52%),
+    linear-gradient(180deg, color-mix(in oklab, var(--color-primary) 64%, transparent), color-mix(in oklab, var(--color-secondary) 82%, transparent));
+}
+
+.error-core-shadow {
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%);
+  filter: blur(24px);
+}
+
+.error-orbit-ring,
+.error-axis {
+  position: absolute;
+  opacity: 0.55;
+}
+
+.error-orbit-ring {
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-border) 62%, transparent);
+}
+
+.error-orbit-ring-outer {
+  inset: 0;
+  animation: error-spin 18s linear infinite;
+}
+
+.error-orbit-ring-middle {
+  inset: 1.4rem;
+  border-style: dashed;
+  animation: error-spin-reverse 14s linear infinite;
+}
+
+.error-orbit-ring-inner {
+  inset: 3rem;
+  opacity: 0.35;
+  animation: error-pulse 4.8s ease-in-out infinite;
+}
+
+.error-axis-horizontal {
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-secondary-content) 38%, transparent), transparent);
+}
+
+.error-axis-vertical {
+  top: 8%;
+  bottom: 8%;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, color-mix(in oklab, var(--color-accent) 35%, transparent), transparent);
+}
+
+.error-code {
+  letter-spacing: -0.06em;
+  text-shadow: 0 0 26px color-mix(in oklab, var(--color-accent) 16%, transparent);
+  animation: error-code-float 5s ease-in-out infinite;
+}
+
+@keyframes error-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(12px, -14px, 0) scale(1.08);
+  }
+}
+
+@keyframes error-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes error-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes error-pulse {
+  0%,
+  100% {
+    transform: scale(0.98);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.52;
+  }
+}
+
+@keyframes error-code-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-aurora,
+  .error-orbit-ring-outer,
+  .error-orbit-ring-middle,
+  .error-orbit-ring-inner,
+  .error-code {
+    animation: none !important;
+  }
+}

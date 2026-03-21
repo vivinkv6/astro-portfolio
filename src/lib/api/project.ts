@@ -1,27 +1,31 @@
-import type { ListingPageData, Project } from "@/types/content";
-import {
-  getCollectionItems,
-  getSingleItem,
-  getStrapiClient,
-  inferProjectSlug,
-  isStrapiConfigured,
-  normalizeMedia,
-  normalizeSeo,
-  sortByPriority,
-  safeStrapi
-} from "@/lib/strapi";
+import type { ListingPageData, PaginatedResult, Project, ProjectTechnology } from "@/types/content";
+import { getCollectionItems, getSingleItem, getStrapiClient, inferProjectSlug, isStrapiConfigured, normalizeMedia, normalizeSeo, safeStrapi } from "@/lib/strapi";
 
 function mapProject(project: any): Project {
   const screenshot = normalizeMedia(project.screenshot);
-  const technologies = Array.isArray(project.skills)
-    ? project.skills.map((skill: any) => skill?.name).filter(Boolean)
+  const technologies: ProjectTechnology[] = Array.isArray(project.skills)
+    ? project.skills
+        .map((skill: any) => ({
+          name: skill?.name || "",
+          icon: normalizeMedia(skill?.logo)?.url,
+          websiteUrl: skill?.website_url || undefined
+        }))
+        .filter((skill: ProjectTechnology) => Boolean(skill.name))
     : Array.isArray(project.skills?.data)
-      ? project.skills.data.map((skill: any) => skill?.name || skill?.attributes?.name).filter(Boolean)
+      ? project.skills.data
+          .map((skill: any) => ({
+            name: skill?.name || skill?.attributes?.name || "",
+            icon: normalizeMedia(skill?.logo || skill?.attributes?.logo)?.url,
+            websiteUrl: skill?.website_url || skill?.attributes?.website_url || undefined
+          }))
+          .filter((skill: ProjectTechnology) => Boolean(skill.name))
       : [];
 
   return {
     id: String(project.documentId || project.id || project.title),
     priority: project.priority || 999,
+    createdAt: project.createdAt || undefined,
+    hideProject: project.hide_project === true,
     title: project.title || "Untitled project",
     slug: inferProjectSlug(project),
     shortDescription: project.short_description || "",
@@ -30,7 +34,8 @@ function mapProject(project: any): Project {
     livePreview: project.live_url || undefined,
     githubLink: project.source_code_link || undefined,
     type: "Project",
-    technologies
+    technologies,
+    seo: normalizeSeo(project.seo)
   };
 }
 
@@ -73,19 +78,87 @@ export async function fetchProjects(): Promise<Project[]> {
     () =>
       client.collection("projects").find({
         sort: ["priority:asc", "createdAt:desc"],
-        populate: "*"
+        populate: {
+          screenshot: true,
+          seo: {
+            populate: {
+              og_image: true
+            }
+          },
+          skills: {
+            populate: {
+              logo: true
+            }
+          }
+        }
       }),
     null
   );
 
-  return sortByPriority(
-    getCollectionItems(response)
-      .filter((project: any) => project?.hide_project !== true)
-      .map(mapProject)
-  );
+  return getCollectionItems(response)
+    .filter((project: any) => project?.hide_project !== true)
+    .map(mapProject)
+    .sort((left, right) => {
+      const priorityDiff = (left.priority ?? 999) - (right.priority ?? 999);
+      if (priorityDiff !== 0) return priorityDiff;
+
+      return +new Date(right.createdAt || 0) - +new Date(left.createdAt || 0);
+    });
 }
 
 export async function fetchProjectBySlug(slug: string) {
   const projects = await fetchProjects();
   return projects.find((project) => project.slug === slug) ?? null;
+}
+
+export async function fetchProjectsPaginated(page: number, pageSize: number): Promise<PaginatedResult<Project> | null> {
+  if (!isStrapiConfigured) return null;
+
+  const client = getStrapiClient();
+  if (!client) return null;
+
+  const response = await safeStrapi(
+    () =>
+      client.collection("projects").find({
+        filters: {
+          hide_project: {
+            $ne: true
+          }
+        },
+        sort: ["priority:asc", "createdAt:desc"],
+        pagination: {
+          page,
+          pageSize
+        },
+        populate: {
+          screenshot: true,
+          seo: {
+            populate: {
+              og_image: true
+            }
+          },
+          skills: {
+            populate: {
+              logo: true
+            }
+          }
+        }
+      }),
+    null
+  );
+
+  if (!response) return null;
+
+  const items = getCollectionItems(response).map(mapProject);
+  const meta = (response as any)?.meta?.pagination;
+
+  return {
+    items,
+    pagination: {
+      page: meta?.page || page,
+      pageSize: meta?.pageSize || pageSize,
+      total: meta?.total || items.length,
+      pageCount: meta?.pageCount || 1
+    }
+  };
 }

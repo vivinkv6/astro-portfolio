@@ -1,4 +1,4 @@
-import type { BlogPost, ListingPageData } from "@/types/content";
+import type { BlogPost, ListingPageData, PaginatedResult } from "@/types/content";
 import {
   byNewest,
   getCollectionItems,
@@ -75,6 +75,11 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
   const response = await safeStrapi(
     () =>
       client.collection("blogs").find({
+        filters: {
+          publishedAt: {
+            $notNull: true
+          }
+        },
         sort: ["published_date:desc", "createdAt:desc"],
         populate: {
           featured_image: true,
@@ -94,10 +99,69 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
     null
   );
 
-  return byNewest(getCollectionItems(response).map(mapBlog));
+  return byNewest(
+    getCollectionItems(response)
+      .filter((post: any) => Boolean(post?.publishedAt))
+      .map(mapBlog)
+  );
 }
 
 export async function fetchBlogBySlug(slug: string) {
   const blogs = await fetchBlogs();
   return blogs.find((blog) => blog.slug === slug) ?? null;
+}
+
+export async function fetchBlogsPaginated(page: number, pageSize: number): Promise<PaginatedResult<BlogPost> | null> {
+  if (!isStrapiConfigured) return null;
+
+  const client = getStrapiClient();
+  if (!client) return null;
+
+  const response = await safeStrapi(
+    () =>
+      client.collection("blogs").find({
+        filters: {
+          publishedAt: {
+            $notNull: true
+          }
+        },
+        sort: ["published_date:desc", "createdAt:desc"],
+        pagination: {
+          page,
+          pageSize
+        },
+        populate: {
+          featured_image: true,
+          banner_image: true,
+          sections: {
+            populate: {
+              image: true
+            }
+          },
+          seo: {
+            populate: {
+              og_image: true
+            }
+          }
+        }
+      }),
+    null
+  );
+
+  if (!response) return null;
+
+  const items = getCollectionItems(response)
+    .filter((post: any) => Boolean(post?.publishedAt))
+    .map(mapBlog);
+  const meta = (response as any)?.meta?.pagination;
+
+  return {
+    items,
+    pagination: {
+      page: meta?.page || page,
+      pageSize: meta?.pageSize || pageSize,
+      total: meta?.total || items.length,
+      pageCount: meta?.pageCount || 1
+    }
+  };
 }

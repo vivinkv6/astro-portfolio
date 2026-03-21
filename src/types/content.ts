@@ -125,7 +125,39 @@ export interface ListingPageData {
   seo?: SeoData;
 }
 
+export interface ErrorPageAction {
+  label: string;
+  href: string;
+  variant?: "primary" | "secondary";
+}
+
+export interface ErrorPageContent {
+  code: string;
+  eyebrow?: string;
+  title: string;
+  description: string;
+  actions: ErrorPageAction[];
+}
+
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  pagination: PaginationMeta;
+}
+
 export interface SkillItem {
+  name: string;
+  icon?: string;
+  websiteUrl?: string;
+}
+
+export interface ProjectTechnology {
   name: string;
   icon?: string;
   websiteUrl?: string;
@@ -191,6 +223,8 @@ export interface BlogPost {
 export interface Project {
   id: string;
   priority: number;
+  createdAt?: string;
+  hideProject?: boolean;
   title: string;
   shortDescription: string;
   longDescription?: string;
@@ -204,7 +238,7 @@ export interface Project {
   numberOfSales?: string;
   type: string;
   siteAge?: string;
-  technologies?: string[];
+  technologies?: ProjectTechnology[];
   slug: string;
   seo?: SeoData;
 }

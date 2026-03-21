@@ -24,7 +24,7 @@ export async function fetchSkillsPage(): Promise<SkillsPageData | null> {
     safeStrapi(
       () =>
         client.collection("skill-categories").find({
-          sort: "name:asc",
+          sort: ["priority:asc", "createdAt:desc"],
           populate: {
             skills: {
               populate: {
@@ -38,16 +38,23 @@ export async function fetchSkillsPage(): Promise<SkillsPageData | null> {
   ]);
 
   const page = getSingleItem(pageResponse);
-  const categories = getCollectionItems(categoriesResponse).map((category: any) => ({
-    category: category.name || "Skills",
-    skills: Array.isArray(category.skills)
-      ? category.skills.map((skill: any) => ({
-          name: skill?.name || "",
-          icon: normalizeMedia(skill?.logo)?.url,
-          websiteUrl: skill?.website_url || undefined
-        }))
-      : []
-  }));
+  const categories = getCollectionItems(categoriesResponse)
+    .sort((left: any, right: any) => {
+      const priorityDiff = (left?.priority ?? 999) - (right?.priority ?? 999);
+      if (priorityDiff !== 0) return priorityDiff;
+
+      return +new Date(right?.createdAt || 0) - +new Date(left?.createdAt || 0);
+    })
+    .map((category: any) => ({
+      category: category.name || "Skills",
+      skills: Array.isArray(category.skills)
+        ? category.skills.map((skill: any) => ({
+            name: skill?.name || "",
+            icon: normalizeMedia(skill?.logo)?.url,
+            websiteUrl: skill?.website_url || undefined
+          }))
+        : []
+    }));
 
   if (!page && categories.length === 0) return null;
 

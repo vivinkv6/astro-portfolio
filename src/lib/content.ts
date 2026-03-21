@@ -13,12 +13,13 @@ import {
 } from "@/data/site";
 import { fetchAboutPage } from "@/lib/api/about";
 import { fetchAcademicPage } from "@/lib/api/academic";
-import { fetchBlogBySlug, fetchBlogPage, fetchBlogs } from "@/lib/api/blog";
+import { fetchBlogBySlug, fetchBlogPage, fetchBlogs, fetchBlogsPaginated } from "@/lib/api/blog";
 import { fetchEducationPage } from "@/lib/api/education";
-import { fetchExperiencePage } from "@/lib/api/experience";
+import { fetchErrorPage } from "@/lib/api/error-page";
+import { fetchExperiencePage, fetchExperiencesPaginated } from "@/lib/api/experience";
 import { fetchSiteConfig } from "@/lib/api/global";
 import { fetchHomePage } from "@/lib/api/home";
-import { fetchProjectBySlug, fetchProjectPage, fetchProjects } from "@/lib/api/project";
+import { fetchProjectBySlug, fetchProjectPage, fetchProjects, fetchProjectsPaginated } from "@/lib/api/project";
 import { fetchSkillsPage } from "@/lib/api/skill";
 import { slugify } from "@/lib/utils";
 import type {
@@ -26,10 +27,14 @@ import type {
   AboutPageData,
   BlogPost,
   EducationPageData,
+  ErrorPageContent,
+  ExperienceItem,
   ExperiencePageData,
   HomePageData,
   ListingPageData,
+  PaginatedResult,
   Project,
+  ProjectTechnology,
   SiteConfig,
   SkillsPageData,
   Testimonial
@@ -46,6 +51,45 @@ async function readJsonDirectory<T>(directory: string): Promise<T[]> {
 
 function contentPath(...parts: string[]) {
   return path.join(process.cwd(), "content", ...parts);
+}
+
+function shouldUsePaginationFallback<T>(paginated: PaginatedResult<T> | null | undefined) {
+  if (!paginated) return true;
+
+  const total = paginated.pagination?.total ?? 0;
+  return total <= 0 && paginated.items.length === 0;
+}
+
+function slicePaginatedItems<T>(items: T[], page: number, pageSize: number): PaginatedResult<T> {
+  const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+  const currentPage = Math.min(Math.max(page, 1), pageCount);
+  const start = (currentPage - 1) * pageSize;
+
+  return {
+    items: items.slice(start, start + pageSize),
+    pagination: {
+      page: currentPage,
+      pageSize,
+      total: items.length,
+      pageCount
+    }
+  };
+}
+
+function normalizeProjectTechnologies(technologies: Project["technologies"] | string[] | undefined): ProjectTechnology[] {
+  if (!Array.isArray(technologies)) return [];
+
+  return technologies
+    .map((technology) =>
+      typeof technology === "string"
+        ? { name: technology }
+        : {
+            name: technology?.name || "",
+            icon: technology?.icon,
+            websiteUrl: technology?.websiteUrl
+          }
+    )
+    .filter((technology) => Boolean(technology.name));
 }
 
 const fallbackSiteConfig: SiteConfig = {
@@ -87,7 +131,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
     ...strapiConfig,
     headerLinks: strapiConfig?.headerLinks?.length ? strapiConfig.headerLinks : fallbackSiteConfig.headerLinks,
     footerGroups: strapiConfig?.footerGroups?.length ? strapiConfig.footerGroups : fallbackSiteConfig.footerGroups,
-    socials: strapiConfig?.socials?.length ? strapiConfig.socials : fallbackSiteConfig.socials,
+    socials: strapiConfig ? (strapiConfig.socials ?? []) : fallbackSiteConfig.socials,
     themes: strapiConfig?.themes?.length ? strapiConfig.themes : fallbackSiteConfig.themes,
     defaultSeo: {
       ...fallbackSiteConfig.defaultSeo,
@@ -199,18 +243,61 @@ export async function getProjectPageData(): Promise<ListingPageData> {
   return (await fetchProjectPage()) || { pageHeading: "Project" };
 }
 
+export async function getErrorPageData(kind: "404" | "500"): Promise<ErrorPageContent> {
+  return (
+    (await fetchErrorPage(kind)) ||
+    (kind === "404"
+      ? {
+          code: "404",
+          eyebrow: "Route not found",
+          title: "Page not found.",
+          description: "The page you are looking for does not exist or may have moved.",
+          actions: [
+            { label: "Go Home", href: "/", variant: "primary" },
+            { label: "View Projects", href: "/project", variant: "secondary" }
+          ]
+        }
+      : {
+          code: "500",
+          eyebrow: "Internal server error",
+          title: "Something went wrong.",
+          description: "An unexpected error occurred while loading this page. Please try again in a moment.",
+          actions: [
+            { label: "Go Home", href: "/", variant: "primary" },
+            { label: "About Me", href: "/about", variant: "secondary" }
+          ]
+        })
+  );
+}
+
 export async function getAllProjects(): Promise<Project[]> {
   const strapiProjects = await fetchProjects();
   if (strapiProjects.length) return strapiProjects;
 
   const localProjects = await readJsonDirectory<Omit<Project, "slug" | "id">>(contentPath("project")).catch(() => []);
   return localProjects
+    .filter((project) => project.hideProject !== true)
     .map((project, index) => ({
       ...project,
       id: String(index),
-      slug: slugify(project.title)
+      slug: slugify(project.title),
+      technologies: normalizeProjectTechnologies(project.technologies),
+      createdAt: project.createdAt
     }))
-    .sort((left, right) => left.priority - right.priority);
+    .sort((left, right) => {
+      const priorityDiff = left.priority - right.priority;
+      if (priorityDiff !== 0) return priorityDiff;
+
+      return +new Date(right.createdAt || 0) - +new Date(left.createdAt || 0);
+    });
+}
+
+export async function getPaginatedProjects(page: number, pageSize: number): Promise<PaginatedResult<Project>> {
+  const paginated = await fetchProjectsPaginated(page, pageSize);
+  if (paginated && !shouldUsePaginationFallback(paginated)) return paginated;
+
+  const projects = await getAllProjects();
+  return slicePaginatedItems(projects, page, pageSize);
 }
 
 export async function getProjectBySlug(slug: string) {
@@ -226,6 +313,22 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
   if (strapiBlogs.length) return strapiBlogs;
 
   return [...sampleBlogs].sort((left, right) => +new Date(right.published) - +new Date(left.published));
+}
+
+export async function getPaginatedBlogs(page: number, pageSize: number): Promise<PaginatedResult<BlogPost>> {
+  const paginated = await fetchBlogsPaginated(page, pageSize);
+  if (paginated && !shouldUsePaginationFallback(paginated)) return paginated;
+
+  const blogs = await getAllBlogs();
+  return slicePaginatedItems(blogs, page, pageSize);
+}
+
+export async function getPaginatedExperiences(page: number, pageSize: number): Promise<PaginatedResult<ExperienceItem>> {
+  const paginated = await fetchExperiencesPaginated(page, pageSize);
+  if (paginated && !shouldUsePaginationFallback(paginated)) return paginated;
+
+  const pageData = await getExperiencePageData();
+  return slicePaginatedItems(pageData.experiences, page, pageSize);
 }
 
 export async function getBlogBySlug(slug: string) {

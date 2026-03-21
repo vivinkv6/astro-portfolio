@@ -1,0 +1,82 @@
+---
+import { GithubIcon, PreviewIcon } from "@/utils/icons";
+import { getAllProjects, getProjectBySlug, getProjectPageData, getSiteConfig } from "@/lib/content";
+import { resolveSeo } from "@/lib/seo";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project }
+  }));
+}
+
+const project = Astro.props.project ?? (await getProjectBySlug(Astro.params.slug!));
+
+if (!project) {
+  return Astro.redirect("/project");
+}
+
+const [site, projectPage] = await Promise.all([getSiteConfig(), getProjectPageData()]);
+const seo = resolveSeo(site, project.seo || projectPage.seo, {
+  title: `${project.title} | ${site.personName}`,
+  description: project.shortDescription,
+  image: project.cover
+});
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  extraJs={seo.extraJs}
+  keywords={seo.keywords}
+  ogTitle={seo.ogTitle}
+  ogDescription={seo.ogDescription}
+  twitterTitle={seo.twitterTitle}
+  twitterDescription={seo.twitterDescription}
+>
+  <section class="py-16">
+    <div class="section-shell max-w-4xl">
+      <div class="mb-8">
+        <a href="/project" class="text-accent text-sm">Back to projects</a>
+        <h1 class="text-neutral mt-5 text-4xl font-bold">{project.title}</h1>
+        <p class="text-primary-content mt-4 text-lg leading-8">{project.shortDescription}</p>
+      </div>
+      <div class="bg-primary/40 border-border overflow-hidden rounded-3xl border p-6">
+        <img src={project.cover} alt={project.title} class="aspect-[16/10] w-full object-contain" />
+      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        {project.livePreview ? (
+          <a href={project.livePreview} target="_blank" rel="noreferrer" class="bg-accent inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-[#00071E]">
+            <PreviewIcon className="h-4 w-4" />
+            Live preview
+          </a>
+        ) : null}
+        {project.githubLink ? (
+          <a href={project.githubLink} target="_blank" rel="noreferrer" class="bg-secondary text-neutral border-border inline-flex items-center gap-2 rounded-lg border px-5 py-3 text-sm">
+            <GithubIcon className="h-4 w-4" />
+            GitHub
+          </a>
+        ) : null}
+      </div>
+      <div class="rich-copy mt-10 space-y-6">
+        <p>{project.longDescription || project.shortDescription}</p>
+        {project.technologies?.length ? (
+          <>
+            <h2>Technology Stack</h2>
+            <div class="mt-4 flex flex-wrap gap-3">
+              {project.technologies.map((tech) => (
+                <div class="bg-primary/70 border-border inline-flex items-center gap-2 rounded-full border px-3 py-2 shadow-sm">
+                  {tech.icon ? <img src={tech.icon} alt={tech.name} class="h-5 w-5 object-contain" /> : <span class="text-accent text-sm font-semibold">{tech.name.charAt(0)}</span>}
+                  <span class="text-primary-content text-sm">{tech.name}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : null}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

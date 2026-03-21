@@ -1,6 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import { skillCategories } from "@/data/site";
-import type { SkillCategory } from "@/types/content";
+import type { SkillCategory, SkillItem } from "@/types/content";
 
 const skillCardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -11,27 +11,45 @@ const skillCardVariants: Variants = {
   })
 };
 
-function SkillCard({ skill, index }: { skill: { name: string; icon?: string }; index: number }) {
+function SkillCardContent({ skill }: { skill: SkillItem }) {
   return (
-    <motion.div
-      custom={index}
-      variants={skillCardVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.05, y: -5 }}
-      className="bg-secondary border-border flex flex-col items-center justify-center rounded-xl border p-6 transition-all duration-300 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10"
-    >
+    <>
       <div className="text-accent mb-3 text-4xl">
         {skill.icon ? <img src={skill.icon} alt={skill.name} className="size-12" /> : <span className="text-4xl font-bold">{skill.name.charAt(0)}</span>}
       </div>
       <p className="text-neutral text-sm font-medium">{skill.name}</p>
+    </>
+  );
+}
+
+function SkillCard({ skill, index }: { skill: SkillItem; index: number }) {
+  const sharedProps = {
+    custom: index,
+    variants: skillCardVariants,
+    initial: "hidden" as const,
+    whileInView: "visible" as const,
+    viewport: { once: true, margin: "-50px" },
+    whileHover: { scale: 1.05, y: -5 },
+    className: `bg-secondary border-border flex flex-col items-center justify-center rounded-xl border p-6 transition-all duration-300 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 ${skill.websiteUrl ? "cursor-pointer" : ""}`
+  };
+
+  if (skill.websiteUrl) {
+    return (
+      <motion.a {...sharedProps} href={skill.websiteUrl} target="_blank" rel="noreferrer noopener" aria-label={skill.name}>
+        <SkillCardContent skill={skill} />
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.div {...sharedProps}>
+      <SkillCardContent skill={skill} />
     </motion.div>
   );
 }
 
 export default function SkillsContentExact({ categories }: { categories?: SkillCategory[] }) {
-  const source = categories?.length ? [...categories].reverse() : [...skillCategories].reverse();
+  const source = categories?.length ? categories : skillCategories;
 
   return (
     <div className="space-y-16">

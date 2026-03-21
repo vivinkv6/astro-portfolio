@@ -13,6 +13,14 @@ interface Props {
   image?: string;
   extraJs?: string;
   keywords?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  robots?: string;
+  mainClass?: string;
+  hideFooter?: boolean;
+  hideThemeToggle?: boolean;
 }
 
 const site = await getSiteConfig();
@@ -21,13 +29,24 @@ const {
   description = site.defaultSeo.description || site.tagline,
   image = site.defaultSeo.ogImage || site.socialImage || "/assets/images/hero-image.png",
   extraJs,
-  keywords
+  keywords,
+  ogTitle = title,
+  ogDescription = description,
+  twitterTitle = ogTitle,
+  twitterDescription = ogDescription,
+  robots = "index,follow",
+  mainClass = "min-h-screen",
+  hideFooter = false,
+  hideThemeToggle = false
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const socialImage = new URL(image, siteUrl).toString();
 const pathname = Astro.url.pathname;
 const defaultTheme = site.themes.find((theme) => theme.isDefault)?.name || "dark";
+const faviconUrl =
+  site.favicon ||
+  "https://res.cloudinary.com/dwwkqmedh/image/upload/v1772984186/favicon_2a1260f3bd.ico";
 
 function themeCss(theme: ThemeOption) {
   if (!theme.tokens) return "";
@@ -79,19 +98,19 @@ const personSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content={robots} />
     {keywords?.length ? <meta name="keywords" content={keywords.join(", ")} /> : null}
     <link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={socialImage} />
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
+    <meta property="twitter:title" content={twitterTitle} />
+    <meta property="twitter:description" content={twitterDescription} />
     <meta property="twitter:image" content={socialImage} />
-    <link rel="icon" type="image/x-icon" href={site.favicon || "/favicon.ico"} />
+    <link rel="icon" type="image/x-icon" href={faviconUrl} />
     {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
     <script is:inline set:html={themeInitScript}></script>
     {site.gtm?.headScript ? <script is:inline set:html={site.gtm.headScript}></script> : null}
@@ -109,10 +128,10 @@ const personSchema = {
     <header>
       <Navbar pathname={pathname} navItems={site.headerLinks} siteName={site.siteName} client:load />
     </header>
-    <main class="min-h-screen">
+    <main class={mainClass}>
       <slot />
     </main>
-    <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} client:idle />
-    <Footer site={site} />
+    {hideThemeToggle ? null : <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} client:idle />}
+    {hideFooter ? null : <Footer site={site} />}
   </body>
 </html>

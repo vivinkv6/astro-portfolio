@@ -1,7 +1,7 @@
 ---
 import Logo from "@/components/Logo.astro";
 import type { SiteConfig } from "@/types/content";
-import { Codepen, Facebook, GithubIcon, Instagram, LinkedIn, XIcon } from "@/utils/icons";
+import { Codepen, Facebook, GithubIcon, Instagram, LinkedIn, MsgIcon, XIcon } from "@/utils/icons";
 
 const { site } = Astro.props as { site: SiteConfig };
 
@@ -12,7 +12,7 @@ const socialIconMap = {
   X: XIcon,
   Instagram,
   CodePen: Codepen,
-  Email: GithubIcon
+  Email: MsgIcon
 };
 ---
 
@@ -40,29 +40,31 @@ const socialIconMap = {
       </div>
     ))}
 
-    <div>
-      <h5 class="text-neutral mb-4 text-lg font-medium">Connect</h5>
-      <ul class="flex gap-4">
-        {site.socials.map((item) => {
-          const Icon = socialIconMap[item.label as keyof typeof socialIconMap] || GithubIcon;
+    {site.socials.length ? (
+      <div>
+        <h5 class="text-neutral mb-4 text-lg font-medium">Connect</h5>
+        <ul class="flex gap-4">
+          {site.socials.map((item) => {
+            const Icon = socialIconMap[item.label as keyof typeof socialIconMap] || GithubIcon;
 
-          return (
-            <li>
-              <a
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={item.label}
-                title={item.label}
-                class="text-tertiary-content hover:text-neutral inline-flex transition-transform duration-300 hover:-translate-y-0.5"
-              >
-                <Icon />
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.label}
+                  title={item.label}
+                  class="text-tertiary-content hover:text-neutral inline-flex transition-transform duration-300 hover:-translate-y-0.5"
+                >
+                  <Icon />
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ) : null}
   </div>
 
   <div class="relative z-10 mt-12 text-center">

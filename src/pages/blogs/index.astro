@@ -1,10 +1,12 @@
 ---
 import BlogSectionExact from "@/components/BlogSectionExact";
-import { getAllBlogs, getBlogPageData, getSiteConfig } from "@/lib/content";
+import PaginationNav from "@/components/PaginationNav.astro";
+import { BLOGS_PAGE_SIZE } from "@/lib/pagination-config";
+import { getBlogPageData, getPaginatedBlogs, getSiteConfig } from "@/lib/content";
 import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const [site, page, blogs] = await Promise.all([getSiteConfig(), getBlogPageData(), getAllBlogs()]);
+const [site, page, paginatedBlogs] = await Promise.all([getSiteConfig(), getBlogPageData(), getPaginatedBlogs(1, BLOGS_PAGE_SIZE)]);
 const seo = resolveSeo(site, page.seo, {
   title: "Blogs | Vivin KV - Tech Articles",
   description: "Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows."
@@ -12,5 +14,6 @@ const seo = resolveSeo(site, page.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <BlogSectionExact blogs={blogs} title={page.pageHeading} client:visible />
+  <BlogSectionExact blogs={paginatedBlogs.items} title={page.pageHeading} client:visible />
+  <PaginationNav basePath="/blogs" currentPage={paginatedBlogs.pagination.page} totalPages={paginatedBlogs.pagination.pageCount} />
 </BaseLayout>

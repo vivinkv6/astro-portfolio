@@ -1,0 +1,35 @@
+---
+import BlogSectionExact from "@/components/BlogSectionExact";
+import PaginationNav from "@/components/PaginationNav.astro";
+import { getBlogPageData, getPaginatedBlogs, getSiteConfig } from "@/lib/content";
+import { BLOGS_PAGE_SIZE } from "@/lib/pagination-config";
+import { resolveSeo } from "@/lib/seo";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const firstPage = await getPaginatedBlogs(1, BLOGS_PAGE_SIZE);
+
+  return Array.from({ length: Math.max(0, firstPage.pagination.pageCount - 1) }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: String(page) }
+    };
+  });
+}
+
+const currentPage = Number(Astro.params.page || "1");
+const [site, pageData, paginatedBlogs] = await Promise.all([
+  getSiteConfig(),
+  getBlogPageData(),
+  getPaginatedBlogs(currentPage, BLOGS_PAGE_SIZE)
+]);
+const seo = resolveSeo(site, pageData.seo, {
+  title: `${pageData.pageHeading} | Page ${currentPage} | Vivin KV - Tech Articles`,
+  description: "Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows."
+});
+---
+
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+  <BlogSectionExact blogs={paginatedBlogs.items} title={pageData.pageHeading} client:visible />
+  <PaginationNav basePath="/blogs" currentPage={paginatedBlogs.pagination.page} totalPages={paginatedBlogs.pagination.pageCount} />
+</BaseLayout>

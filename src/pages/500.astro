@@ -1,0 +1,22 @@
+---
+import ErrorState from "@/components/ErrorState.astro";
+import { getErrorPageData } from "@/lib/content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const page = await getErrorPageData("500");
+---
+
+<BaseLayout
+  title={`${page.code} | ${page.title}`}
+  description={page.description}
+  robots="noindex,nofollow"
+  mainClass="min-h-screen"
+>
+  <ErrorState
+    code={page.code}
+    eyebrow={page.eyebrow}
+    title={page.title}
+    description={page.description}
+    actions={page.actions}
+  />
+</BaseLayout>

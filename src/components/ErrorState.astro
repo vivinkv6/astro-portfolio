@@ -1,0 +1,87 @@
+---
+interface ActionItem {
+  href: string;
+  label: string;
+  variant?: "primary" | "secondary";
+}
+
+interface Props {
+  code: string;
+  title: string;
+  description: string;
+  eyebrow?: string;
+  actions?: ActionItem[];
+}
+
+const {
+  code,
+  title,
+  description,
+  eyebrow = "Something interrupted the route.",
+  actions = []
+} = Astro.props;
+---
+
+<section class="flex min-h-[calc(100vh-14rem)] items-center justify-center overflow-hidden py-4 md:min-h-[calc(100vh-15rem)] md:py-6">
+  <div class="pointer-events-none absolute inset-0 opacity-90">
+    <div class="error-aurora error-aurora-left"></div>
+    <div class="error-aurora error-aurora-right"></div>
+  </div>
+
+  <div class="section-shell relative w-full">
+    <div class="glow-panel bg-secondary/70 border-border error-shell mx-auto max-w-4xl overflow-hidden rounded-[28px] border">
+      <div class="grid gap-0 lg:grid-cols-[1.08fr_0.92fr]">
+        <div class="p-6 md:p-8 lg:p-9">
+          <div class="hero-reveal">
+            <p class="text-accent text-xs tracking-[0.28em] uppercase">{eyebrow}</p>
+          </div>
+          <div class="hero-reveal hero-delay-1">
+            <h1 class="text-neutral mt-3 max-w-2xl text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">{title}</h1>
+          </div>
+          <div class="hero-reveal hero-delay-2">
+            <p class="text-tertiary-content mt-4 max-w-2xl text-sm leading-7 md:text-[15px]">{description}</p>
+          </div>
+
+          <div class="hero-reveal hero-delay-3 mt-6">
+            <div class="flex flex-wrap gap-3">
+              {actions.map((action) => (
+                <a
+                  href={action.href}
+                  class:list={[
+                    "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium",
+                    action.variant === "secondary"
+                      ? "bg-primary/60 text-primary-content border-border border hover:border-accent/40 hover:text-neutral"
+                      : "bg-accent text-[#00071E] hover:translate-y-[-1px] hover:brightness-110"
+                  ]}
+                >
+                  {action.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div class="border-border bg-primary/45 error-display flex min-h-[220px] items-center justify-center border-t px-5 py-6 lg:min-h-full lg:border-t-0 lg:border-l">
+          <div class="hero-visual-reveal relative flex aspect-square w-full max-w-[220px] items-center justify-center lg:max-w-[250px]">
+            <div class="error-orbit-ring error-orbit-ring-outer"></div>
+            <div class="error-orbit-ring error-orbit-ring-middle"></div>
+            <div class="error-orbit-ring error-orbit-ring-inner"></div>
+            <div class="error-axis error-axis-horizontal"></div>
+            <div class="error-axis error-axis-vertical"></div>
+            <div class="error-core-shadow absolute inset-8 rounded-full"></div>
+            <div class="error-core relative flex h-full w-full items-center justify-center rounded-full border border-accent/20 bg-primary/80 shadow-[0_24px_90px_rgba(0,7,30,0.45)]">
+              <div class="absolute inset-4 rounded-full border border-dashed border-secondary-content/15"></div>
+              <div class="absolute inset-10 rounded-full border border-accent/15"></div>
+              <div class="absolute top-[18%] right-[18%] h-3 w-3 rounded-full bg-accent shadow-[0_0_18px_var(--color-accent)]"></div>
+              <div class="absolute bottom-[17%] left-[16%] h-2 w-2 rounded-full bg-secondary-content shadow-[0_0_18px_var(--color-secondary-content)]"></div>
+              <div class="text-center">
+                <p class="text-accent text-xs tracking-[0.34em] uppercase">Status</p>
+                <p class="error-code text-neutral mt-3 text-5xl font-bold md:text-6xl">{code}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

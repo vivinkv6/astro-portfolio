@@ -1,10 +1,12 @@
 ---
 import ExperienceSectionExact from "@/components/ExperienceSectionExact";
-import { getExperiencePageData, getSiteConfig } from "@/lib/content";
+import PaginationNav from "@/components/PaginationNav.astro";
+import { EXPERIENCES_PAGE_SIZE } from "@/lib/pagination-config";
+import { getExperiencePageData, getPaginatedExperiences, getSiteConfig } from "@/lib/content";
 import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const [site, page] = await Promise.all([getSiteConfig(), getExperiencePageData()]);
+const [site, page, paginatedExperiences] = await Promise.all([getSiteConfig(), getExperiencePageData(), getPaginatedExperiences(1, EXPERIENCES_PAGE_SIZE)]);
 const seo = resolveSeo(site, page.seo, {
   title: "Experience | Vivin KV",
   description: "Professional experience across frontend development, API integration, and technical leadership."
@@ -12,5 +14,6 @@ const seo = resolveSeo(site, page.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ExperienceSectionExact experiences={page.experiences} title={page.pageHeading} client:visible />
+  <ExperienceSectionExact experiences={paginatedExperiences.items} title={page.pageHeading} client:visible />
+  <PaginationNav basePath="/experience" currentPage={paginatedExperiences.pagination.page} totalPages={paginatedExperiences.pagination.pageCount} />
 </BaseLayout>

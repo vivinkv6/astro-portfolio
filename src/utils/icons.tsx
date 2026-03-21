@@ -85,6 +85,15 @@ export const CheckIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
+export const MsgIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path
+      d="M17 3.59741H7C4 3.59741 2 5.09741 2 8.59741V15.5974C2 19.0974 4 20.5974 7 20.5974H17C20 20.5974 22 19.0974 22 15.5974V8.59741C22 5.09741 20 3.59741 17 3.59741ZM17.47 9.68741L14.34 12.1874C13.68 12.7174 12.84 12.9774 12 12.9774C11.16 12.9774 10.31 12.7174 9.66 12.1874L6.53 9.68741C6.21 9.42741 6.16 8.94741 6.41 8.62741C6.67 8.30741 7.14 8.24741 7.46 8.50741L10.59 11.0074C11.35 11.6174 12.64 11.6174 13.4 11.0074L16.53 8.50741C16.85 8.24741 17.33 8.29741 17.58 8.62741C17.84 8.94741 17.79 9.42741 17.47 9.68741Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const StarIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
   <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
     <path

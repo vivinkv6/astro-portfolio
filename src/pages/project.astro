@@ -1,10 +1,12 @@
 ---
 import ProjectSectionExact from "@/components/ProjectSectionExact";
-import { getAllProjects, getProjectPageData, getSiteConfig } from "@/lib/content";
+import PaginationNav from "@/components/PaginationNav.astro";
+import { PROJECTS_PAGE_SIZE } from "@/lib/pagination-config";
+import { getPaginatedProjects, getProjectPageData, getSiteConfig } from "@/lib/content";
 import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const [site, page, projects] = await Promise.all([getSiteConfig(), getProjectPageData(), getAllProjects()]);
+const [site, page, paginatedProjects] = await Promise.all([getSiteConfig(), getProjectPageData(), getPaginatedProjects(1, PROJECTS_PAGE_SIZE)]);
 const seo = resolveSeo(site, page.seo, {
   title: "Project | Vivin KV - Portfolio",
   description: "Explore the portfolio projects, product experiments, and client work delivered by Vivin KV."
@@ -12,5 +14,6 @@ const seo = resolveSeo(site, page.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ProjectSectionExact projects={projects} title={page.pageHeading} client:visible />
+  <ProjectSectionExact projects={paginatedProjects.items} title={page.pageHeading} client:visible />
+  <PaginationNav basePath="/project" currentPage={paginatedProjects.pagination.page} totalPages={paginatedProjects.pagination.pageCount} />
 </BaseLayout>

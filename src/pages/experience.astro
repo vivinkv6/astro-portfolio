@@ -14,6 +14,6 @@ const seo = resolveSeo(site, page.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ExperienceSectionExact experiences={paginatedExperiences.items} title={page.pageHeading} client:visible />
+  <ExperienceSectionExact experiences={paginatedExperiences.items} title={page.pageHeading} client:load />
   <PaginationNav basePath="/experience" currentPage={paginatedExperiences.pagination.page} totalPages={paginatedExperiences.pagination.pageCount} />
 </BaseLayout>

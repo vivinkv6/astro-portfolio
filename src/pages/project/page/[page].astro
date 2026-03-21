@@ -30,6 +30,6 @@ const seo = resolveSeo(site, pageData.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ProjectSectionExact projects={paginatedProjects.items} title={pageData.pageHeading} client:visible />
+  <ProjectSectionExact projects={paginatedProjects.items} title={pageData.pageHeading} client:load />
   <PaginationNav basePath="/project" currentPage={paginatedProjects.pagination.page} totalPages={paginatedProjects.pagination.pageCount} />
 </BaseLayout>

@@ -24,7 +24,7 @@ const seo = resolveSeo(site, page.seo, {
         <span class="text-accent mr-2">//</span>
         {page.pageHeading}
       </h2>
-      <AcademicsContentExact journey={page.journey} client:visible />
+      <AcademicsContentExact journey={page.journey} client:load />
     </div>
   </section>
 </BaseLayout>

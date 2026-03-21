@@ -28,8 +28,8 @@ const seo = resolveSeo(site, homePage.seo, {
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
   <HeroExact hero={homePage.hero} client:load />
   <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} client:load />
-  <AboutSectionExact about={aboutPage} client:visible />
-  <ExperienceSectionExact experiences={experiencePage.experiences} limit={2} title={experiencePage.pageHeading} client:visible />
-  <ProjectSectionExact projects={projects} limit={3} title="Latest Projects" client:visible />
-  <BlogSectionExact blogs={blogs} limit={3} title="Latest Blogs" client:visible />
+  <AboutSectionExact about={aboutPage} client:load />
+  <ExperienceSectionExact experiences={experiencePage.experiences} limit={2} title={experiencePage.pageHeading} client:load />
+  <ProjectSectionExact projects={projects} limit={3} title="Latest Projects" client:load />
+  <BlogSectionExact blogs={blogs} limit={3} title="Latest Blogs" client:load />
 </BaseLayout>

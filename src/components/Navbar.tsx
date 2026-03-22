@@ -11,6 +11,24 @@ const defaultNavItems = [
   { label: "Blogs", href: "/blogs" }
 ];
 
+function normalizePath(path: string) {
+  if (!path) return "/";
+
+  const normalized = path.replace(/\/+$/, "");
+  return normalized || "/";
+}
+
+function isNavItemActive(currentPath: string, itemHref: string) {
+  const normalizedCurrentPath = normalizePath(currentPath);
+  const normalizedItemHref = normalizePath(itemHref);
+
+  if (normalizedItemHref === "/") {
+    return normalizedCurrentPath === "/";
+  }
+
+  return normalizedCurrentPath === normalizedItemHref || normalizedCurrentPath.startsWith(`${normalizedItemHref}/`);
+}
+
 function LogoMark() {
   return (
     <svg width="28" height="24" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -40,6 +58,7 @@ export default function Navbar({
   siteName?: string;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const normalizedPathname = normalizePath(pathname);
 
   useEffect(() => {
     document.body.style.overflow = isVisible ? "hidden" : "";
@@ -53,7 +72,7 @@ export default function Navbar({
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4">
         <a href="/" className="flex items-center gap-2">
           <LogoMark />
-          <span className="text-primary-content font-semibold whitespace-nowrap">{siteName}</span>
+          <span className="text-neutral font-semibold whitespace-nowrap">{siteName}</span>
         </a>
 
         <button
@@ -69,17 +88,22 @@ export default function Navbar({
         <ul
           className={`${isVisible ? "flex" : "hidden"} bg-primary absolute inset-x-0 top-16 z-40 min-h-[calc(100dvh-4rem)] flex-col md:static md:flex md:min-h-0 md:flex-row md:items-center md:gap-6`}
         >
-          {navItems.map((item) => (
-            <li key={item.href} className="border-border border-b px-6 py-4 md:border-none md:px-0 md:py-0">
-              <a
-                href={item.href}
-                onClick={() => setIsVisible(false)}
-                className={`${pathname === item.href ? "text-neutral" : "text-primary-content"} hover:text-neutral block`}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = isNavItemActive(normalizedPathname, item.href);
+
+            return (
+              <li key={item.href} className="border-border border-b px-6 py-4 md:border-none md:px-0 md:py-0">
+                <a
+                  href={item.href}
+                  onClick={() => setIsVisible(false)}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`navbar-link ${isActive ? "navbar-link-active" : "navbar-link-inactive"} inline-flex w-auto items-center`}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>

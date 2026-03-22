@@ -55,22 +55,25 @@ export default function AcademicsContentExact({ journey }: { journey?: AcademicJ
   const source = journey?.length ? journey : academicsData.map((item) => ({ title: item.title, date: item.date, description: item.description }));
 
   return (
-    <div className="relative">
-      <div className="bg-border absolute top-0 left-4 h-full w-0.5 md:left-1/2" />
+    <div className="relative mx-auto max-w-5xl">
+      <div className="bg-border absolute top-3 bottom-3 left-4 w-px md:left-1/2 md:-translate-x-1/2" />
 
       {source.map((item, index) => (
-        <div key={index} className={`relative mb-8 flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
-          <div className={`ml-12 md:w-1/2 ${index % 2 === 0 ? "md:pr-12" : "md:pl-12"}`}>
-            <div className="bg-secondary border-border rounded-xl border p-5">
-              <span className="text-accent text-sm">{item.date}</span>
-              <h3 className="text-neutral mt-1 text-lg font-semibold">{item.title}</h3>
-              <p className="text-tertiary-content mt-3 text-sm leading-relaxed">{item.description}</p>
+        <article key={index} className={`relative pb-7 last:pb-0 md:pb-10 ${index % 2 === 0 ? "md:flex md:flex-row" : "md:flex md:flex-row-reverse"}`}>
+          <div className={`pl-14 pr-1 sm:pl-16 sm:pr-2 md:w-1/2 md:px-0 ${index % 2 === 0 ? "md:pr-12" : "md:pl-12"}`}>
+            <div className="glow-panel bg-secondary border-border rounded-2xl border px-4 py-4 shadow-sm sm:px-5 sm:py-5">
+              <span className="inline-flex rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-[0.7rem] font-medium tracking-[0.16em] text-accent uppercase sm:text-xs">
+                {item.date}
+              </span>
+              <h3 className="text-neutral mt-3 text-base leading-snug font-semibold sm:text-lg">{item.title}</h3>
+              <p className="text-tertiary-content mt-3 text-sm leading-7 sm:text-[0.95rem]">{item.description}</p>
             </div>
           </div>
-          <div className="bg-accent absolute top-5 left-4 flex size-8 items-center justify-center rounded-full md:left-1/2 md:-translate-x-1/2">
-            <div className="bg-primary size-3 rounded-full" />
+
+          <div className="absolute top-4 left-4 flex size-8 -translate-x-1/2 items-center justify-center rounded-full border border-accent/25 bg-secondary shadow-[0_0_0_6px_color-mix(in_oklab,var(--color-primary)_88%,transparent)] md:left-1/2">
+            <div className="size-3 rounded-full bg-accent shadow-[0_0_18px_color-mix(in_oklab,var(--color-accent)_45%,transparent)]" />
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );

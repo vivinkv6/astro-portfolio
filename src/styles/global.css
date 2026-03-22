@@ -299,6 +299,8 @@ section {
 
 .rich-copy :where(ul, ol) {
   color: var(--color-tertiary-content) !important;
+  list-style-position: outside;
+  margin-block: 1rem 1.25rem;
   padding-left: 1.5rem;
 }
 
@@ -312,6 +314,15 @@ section {
 
 .rich-copy li::marker {
   color: var(--color-accent);
+}
+
+.rich-copy li {
+  margin-block: 0.55rem;
+  padding-left: 0.2rem;
+}
+
+.rich-copy li > :where(p, div) {
+  margin-block: 0;
 }
 
 .rich-copy a {
@@ -381,7 +392,18 @@ section {
 }
 
 .rich-copy img {
-  border-radius: 1.5rem;
+  border-radius: 0;
+}
+
+@media (max-width: 640px) {
+  .rich-copy :where(ul, ol) {
+    padding-left: 1.25rem;
+  }
+
+  .rich-copy li {
+    line-height: 1.8;
+    padding-left: 0.15rem;
+  }
 }
 
 .hero-reveal {

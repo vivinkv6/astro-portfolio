@@ -28,8 +28,8 @@ import { academics, education } from "@/data/site";
               <ul class="mt-4 space-y-3">
                 {item.points.map((point) => (
                   <li class="text-tertiary-content flex items-start gap-3">
-                    <span class="bg-accent mt-2 block h-2 w-2 rounded-full"></span>
-                    <span>{point}</span>
+                    <span class="bg-accent mt-2 block h-2 w-2 shrink-0 rounded-full"></span>
+                    <span class="min-w-0 flex-1">{point}</span>
                   </li>
                 ))}
               </ul>

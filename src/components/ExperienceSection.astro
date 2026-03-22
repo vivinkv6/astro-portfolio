@@ -33,8 +33,8 @@ const showViewMore = typeof limit === "number" && source.length > limit;
           <ul class="mt-6 space-y-3">
             {item.responsibilities.map((resp) => (
               <li class="text-tertiary-content flex items-start gap-3 text-sm leading-relaxed">
-                <span class="bg-accent mt-2 block h-2 w-2 rounded-full"></span>
-                <span>{resp}</span>
+                <span class="bg-accent mt-2 block h-2 w-2 shrink-0 rounded-full"></span>
+                <span class="min-w-0 flex-1">{resp}</span>
               </li>
             ))}
           </ul>

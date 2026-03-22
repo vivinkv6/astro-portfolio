@@ -1,5 +1,5 @@
 ---
-import BlogSectionExact from "@/components/BlogSectionExact";
+import BlogList from "@/components/BlogList.astro";
 import PaginationNav from "@/components/PaginationNav.astro";
 import { getBlogPageData, getPaginatedBlogs, getSiteConfig } from "@/lib/content";
 import { BLOGS_PAGE_SIZE } from "@/lib/pagination-config";
@@ -30,6 +30,6 @@ const seo = resolveSeo(site, pageData.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <BlogSectionExact blogs={paginatedBlogs.items} title={pageData.pageHeading} client:load />
+  <BlogList blogs={paginatedBlogs.items} title={pageData.pageHeading} />
   <PaginationNav basePath="/blogs" currentPage={paginatedBlogs.pagination.page} totalPages={paginatedBlogs.pagination.pageCount} />
 </BaseLayout>

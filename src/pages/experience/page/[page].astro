@@ -1,5 +1,5 @@
 ---
-import ExperienceSectionExact from "@/components/ExperienceSectionExact";
+import ExperienceSection from "@/components/ExperienceSection.astro";
 import PaginationNav from "@/components/PaginationNav.astro";
 import { getExperiencePageData, getPaginatedExperiences, getSiteConfig } from "@/lib/content";
 import { EXPERIENCES_PAGE_SIZE } from "@/lib/pagination-config";
@@ -30,6 +30,6 @@ const seo = resolveSeo(site, pageData.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ExperienceSectionExact experiences={paginatedExperiences.items} title={pageData.pageHeading} client:load />
+  <ExperienceSection experiences={paginatedExperiences.items} title={pageData.pageHeading} />
   <PaginationNav basePath="/experience" currentPage={paginatedExperiences.pagination.page} totalPages={paginatedExperiences.pagination.pageCount} />
 </BaseLayout>

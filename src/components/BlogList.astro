@@ -1,6 +1,6 @@
 ---
 import SectionHeading from "@/components/SectionHeading.astro";
-import { excerpt, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { BlogPost } from "@/types/content";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 
 const { blogs, title = "Blogs", limit } = Astro.props;
 const displayBlogs = typeof limit === "number" ? blogs.slice(0, limit) : blogs;
+const showViewMore = typeof limit === "number" && blogs.length > limit;
 ---
 
 <section class="py-12">
@@ -29,15 +30,22 @@ const displayBlogs = typeof limit === "number" ? blogs.slice(0, limit) : blogs;
             <h3 class="text-neutral text-xl font-semibold">
               <a href={`/blogs/${blog.slug}`}>{blog.title}</a>
             </h3>
-            <p class="text-tertiary-content text-sm leading-7">{excerpt(blog.content, 150)}</p>
             {blog.labels?.length ? (
               <div class="flex flex-wrap gap-2">
-                {blog.labels.map((label) => <span class="pill text-accent text-xs">{label}</span>)}
+                {blog.labels.slice(0, 3).map((label) => <span class="pill text-accent text-xs">{label}</span>)}
+                {blog.labels.length > 3 ? (
+                  <span class="pill text-accent text-xs">+{blog.labels.length - 3} tags</span>
+                ) : null}
               </div>
             ) : null}
           </div>
         </article>
       ))}
     </div>
+    {showViewMore ? (
+      <div class="mt-8 text-center">
+        <a href="/blogs" class="text-accent text-sm font-medium">View More Blogs →</a>
+      </div>
+    ) : null}
   </div>
 </section>

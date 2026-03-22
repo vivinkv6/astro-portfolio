@@ -1,6 +1,6 @@
 ---
 import PaginationNav from "@/components/PaginationNav.astro";
-import ProjectSectionExact from "@/components/ProjectSectionExact";
+import ProjectGrid from "@/components/ProjectGrid.astro";
 import { getPaginatedProjects, getProjectPageData, getSiteConfig } from "@/lib/content";
 import { PROJECTS_PAGE_SIZE } from "@/lib/pagination-config";
 import { resolveSeo } from "@/lib/seo";
@@ -30,6 +30,6 @@ const seo = resolveSeo(site, pageData.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <ProjectSectionExact projects={paginatedProjects.items} title={pageData.pageHeading} client:load />
+  <ProjectGrid projects={paginatedProjects.items} title={pageData.pageHeading} />
   <PaginationNav basePath="/project" currentPage={paginatedProjects.pagination.page} totalPages={paginatedProjects.pagination.pageCount} />
 </BaseLayout>

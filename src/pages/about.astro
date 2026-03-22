@@ -1,5 +1,5 @@
 ---
-import AboutSectionExact from "@/components/AboutSectionExact";
+import AboutSection from "@/components/AboutSection.astro";
 import SkillsStripExact from "@/components/SkillsStripExact";
 import { getAboutPageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
 import { resolveSeo } from "@/lib/seo";
@@ -20,6 +20,6 @@ const seo = resolveSeo(site, aboutPage.seo, {
   extraJs={seo.extraJs}
   keywords={seo.keywords}
 >
-  <AboutSectionExact about={aboutPage} client:load />
+  <AboutSection about={aboutPage} />
   <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} className="pt-8 pb-2" />
 </BaseLayout>

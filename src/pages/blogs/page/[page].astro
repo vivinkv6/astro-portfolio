@@ -3,7 +3,9 @@ import BlogList from "@/components/BlogList.astro";
 import PaginationNav from "@/components/PaginationNav.astro";
 import { getBlogPageData, getPaginatedBlogs, getSiteConfig } from "@/lib/content";
 import { BLOGS_PAGE_SIZE } from "@/lib/pagination-config";
+import { createBreadcrumbSchema, createCollectionPageSchema, createItemListSchema } from "@/lib/schema";
 import { resolveSeo } from "@/lib/seo";
+import { siteUrl } from "@/lib/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
@@ -27,9 +29,31 @@ const seo = resolveSeo(site, pageData.seo, {
   title: `${pageData.pageHeading} | Page ${currentPage} | Vivin KV - Tech Articles`,
   description: "Read articles on web development, React, Next.js, TypeScript, and practical engineering workflows."
 });
+const pagePath = `/blogs/page/${currentPage}`;
+const structuredData = [
+  createCollectionPageSchema({
+    name: seo.title,
+    description: seo.description,
+    path: pagePath
+  }),
+  createItemListSchema({
+    name: `Blog posts page ${currentPage}`,
+    path: pagePath,
+    items: paginatedBlogs.items,
+    mapItem: (blog) => ({
+      name: blog.title,
+      url: new URL(`/blogs/${blog.slug}`, siteUrl).toString()
+    })
+  }),
+  createBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Blogs", path: "/blogs" },
+    { name: `Page ${currentPage}`, path: pagePath }
+  ])
+];
 ---
 
-<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords} structuredData={structuredData}>
   <BlogList blogs={paginatedBlogs.items} title={pageData.pageHeading} />
   <PaginationNav basePath="/blogs" currentPage={paginatedBlogs.pagination.page} totalPages={paginatedBlogs.pagination.pageCount} />
 </BaseLayout>

@@ -3,7 +3,8 @@ import "@/styles/global.css";
 import Footer from "@/components/Footer.astro";
 import Navbar from "@/components/Navbar";
 import ThemeToggle from "@/components/ThemeToggle";
-import { getSiteConfig } from "@/lib/content";
+import { getEducationPageData, getExperiencePageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
+import { createPersonSchema, createWebsiteSchema } from "@/lib/schema";
 import { siteUrl } from "@/lib/utils";
 import type { ThemeOption } from "@/types/content";
 
@@ -21,9 +22,15 @@ interface Props {
   mainClass?: string;
   hideFooter?: boolean;
   hideThemeToggle?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const site = await getSiteConfig();
+const [site, experiencePage, educationPage, skillsPage] = await Promise.all([
+  getSiteConfig(),
+  getExperiencePageData(),
+  getEducationPageData(),
+  getSkillsPageData()
+]);
 const {
   title = site.defaultSeo.title || `${site.personName} | ${site.jobTitle}`,
   description = site.defaultSeo.description || site.tagline,
@@ -37,7 +44,8 @@ const {
   robots = "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
   mainClass = "min-h-screen",
   hideFooter = false,
-  hideThemeToggle = false
+  hideThemeToggle = false,
+  structuredData = []
 } = Astro.props;
 
 function normalizeCanonical(pathname: string) {
@@ -78,22 +86,12 @@ const themeInitScript = `(() => {
   const storedTheme = localStorage.getItem("theme") || defaultTheme;
   document.documentElement.setAttribute("data-theme", storedTheme);
 })();`;
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: site.personName,
-  jobTitle: site.jobTitle,
-  description,
-  email: site.email,
-  telephone: site.phone,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: site.location,
-    addressCountry: "IN"
-  },
-  url: siteUrl,
-  image: socialImage
-};
+const baseSchemas = [
+  createWebsiteSchema(site),
+  createPersonSchema(site, description, image, experiencePage.experiences, educationPage.items, skillsPage.categories)
+];
+const pageSchemas = Array.isArray(structuredData) ? structuredData : [structuredData];
+const schemaGraph = [...baseSchemas, ...pageSchemas];
 ---
 
 <!doctype html>
@@ -127,7 +125,7 @@ const personSchema = {
       href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)}></script>
   </head>
   <body>
     {site.gtm?.bodyScript ? <Fragment set:html={site.gtm.bodyScript} /> : null}

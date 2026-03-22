@@ -1,6 +1,7 @@
 ---
 import { GithubIcon, PreviewIcon } from "@/utils/icons";
 import { getAllProjects, getProjectBySlug, getProjectPageData, getSiteConfig } from "@/lib/content";
+import { createBreadcrumbSchema, createSoftwareSourceCodeSchema } from "@/lib/schema";
 import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
@@ -24,6 +25,14 @@ const seo = resolveSeo(site, project.seo || projectPage.seo, {
   description: project.shortDescription,
   image: project.cover
 });
+const structuredData = [
+  createSoftwareSourceCodeSchema(project),
+  createBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Project", path: "/project" },
+    { name: project.title, path: `/project/${project.slug}` }
+  ])
+];
 ---
 
 <BaseLayout
@@ -36,6 +45,7 @@ const seo = resolveSeo(site, project.seo || projectPage.seo, {
   ogDescription={seo.ogDescription}
   twitterTitle={seo.twitterTitle}
   twitterDescription={seo.twitterDescription}
+  structuredData={structuredData}
 >
   <section class="py-16">
     <div class="section-shell max-w-4xl">

@@ -1,5 +1,6 @@
 ---
 import { getAllBlogs, getBlogBySlug, getSiteConfig } from "@/lib/content";
+import { createBlogPostingSchema, createBreadcrumbSchema } from "@/lib/schema";
 import { resolveSeo } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
@@ -24,9 +25,17 @@ const seo = resolveSeo(site, blog.seo, {
   description: blog.content,
   image: blog.bannerImage || blog.coverImage
 });
+const structuredData = [
+  createBlogPostingSchema(blog),
+  createBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Blogs", path: "/blogs" },
+    { name: blog.title, path: `/blogs/${blog.slug}` }
+  ])
+];
 ---
 
-<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords} structuredData={structuredData}>
   <article class="py-16">
     <div class="section-shell max-w-4xl">
       <header class="mb-8">

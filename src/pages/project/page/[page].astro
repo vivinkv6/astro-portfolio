@@ -3,7 +3,9 @@ import PaginationNav from "@/components/PaginationNav.astro";
 import ProjectGrid from "@/components/ProjectGrid.astro";
 import { getPaginatedProjects, getProjectPageData, getSiteConfig } from "@/lib/content";
 import { PROJECTS_PAGE_SIZE } from "@/lib/pagination-config";
+import { createBreadcrumbSchema, createCollectionPageSchema, createItemListSchema } from "@/lib/schema";
 import { resolveSeo } from "@/lib/seo";
+import { siteUrl } from "@/lib/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
@@ -27,9 +29,31 @@ const seo = resolveSeo(site, pageData.seo, {
   title: `${pageData.pageHeading} | Page ${currentPage} | Vivin KV - Portfolio`,
   description: "Explore the portfolio projects, product experiments, and client work delivered by Vivin KV."
 });
+const pagePath = `/project/page/${currentPage}`;
+const structuredData = [
+  createCollectionPageSchema({
+    name: seo.title,
+    description: seo.description,
+    path: pagePath
+  }),
+  createItemListSchema({
+    name: `Projects page ${currentPage}`,
+    path: pagePath,
+    items: paginatedProjects.items,
+    mapItem: (project) => ({
+      name: project.title,
+      url: new URL(`/project/${project.slug}`, siteUrl).toString()
+    })
+  }),
+  createBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Project", path: "/project" },
+    { name: `Page ${currentPage}`, path: pagePath }
+  ])
+];
 ---
 
-<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords} structuredData={structuredData}>
   <ProjectGrid projects={paginatedProjects.items} title={pageData.pageHeading} />
   <PaginationNav basePath="/project" currentPage={paginatedProjects.pagination.page} totalPages={paginatedProjects.pagination.pageCount} />
 </BaseLayout>

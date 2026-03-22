@@ -3,12 +3,12 @@ import { useRef } from "react";
 import type { AboutPageData } from "@/types/content";
 
 const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 1, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
 const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: { staggerChildren: 0.2 }
@@ -38,7 +38,7 @@ export default function AboutSectionExact({ about }: { about?: AboutPageData }) 
     <section id="about" className="bg-secondary overflow-hidden py-16">
       <div className="mx-auto max-w-[1200px] px-4">
         <motion.h2
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 1, x: -30 }}
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.5 }}
           className="text-neutral mb-8 text-3xl font-bold"

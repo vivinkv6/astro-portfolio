@@ -10,7 +10,7 @@ type ExperienceSectionExactProps = {
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 1, y: 30 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -29,7 +29,7 @@ export default function ExperienceSectionExact({ limit, title = "Experience", ex
     <section id="experience" className="overflow-hidden py-16">
       <div className="mx-auto max-w-[1200px] px-4">
         <motion.h2
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 1, x: -30 }}
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.5 }}
           className="text-neutral mb-12 text-3xl font-bold"
@@ -73,7 +73,7 @@ export default function ExperienceSectionExact({ limit, title = "Experience", ex
         </div>
 
         {showViewMore ? (
-          <motion.div initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.5 }} className="mt-8 text-center">
+          <motion.div initial={{ opacity: 1 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.5 }} className="mt-8 text-center">
             <a href="/experience" className="inline-flex items-center gap-2 text-sm font-medium text-accent transition-all hover:translate-x-1 hover:text-accent/80">
               View More Experience →
             </a>

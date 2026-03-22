@@ -3,7 +3,7 @@ import { useRef } from "react";
 import type { Project, ProjectTechnology } from "@/types/content";
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 1, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -86,7 +86,7 @@ export default function ProjectSectionExact({ projects, title = "Latest Projects
   return (
     <section id="projects" className="overflow-hidden py-12">
       <div className="mx-auto max-w-[1200px] px-4">
-        <motion.h2 initial={{ opacity: 0, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.5 }} className="text-neutral mb-8 text-2xl font-bold">
+        <motion.h2 initial={{ opacity: 1, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.5 }} className="text-neutral mb-8 text-2xl font-bold">
           <span className="text-accent mr-2">//</span>
           {title}
         </motion.h2>
@@ -100,7 +100,7 @@ export default function ProjectSectionExact({ projects, title = "Latest Projects
         </motion.div>
 
         {showViewMore ? (
-          <motion.div initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.5 }} className="mt-8 text-center">
+          <motion.div initial={{ opacity: 1 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.5 }} className="mt-8 text-center">
             <a href="/project" className="inline-flex items-center gap-2 text-sm font-medium text-accent transition-all hover:translate-x-1 hover:text-accent/80">
               View More Projects
             </a>

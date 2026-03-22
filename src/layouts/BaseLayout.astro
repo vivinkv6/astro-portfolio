@@ -114,6 +114,7 @@ const personSchema = {
     {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
     <script is:inline set:html={themeInitScript}></script>
     {site.gtm?.headScript ? <script is:inline set:html={site.gtm.headScript}></script> : null}
+    {site.gtm?.otherScript ? <script is:inline set:html={site.gtm.otherScript}></script> : null}
     {extraJs ? <script is:inline set:html={extraJs}></script> : null}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

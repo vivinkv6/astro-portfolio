@@ -40,7 +40,12 @@ const {
   hideThemeToggle = false
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+function normalizeCanonical(pathname: string) {
+  const normalizedPath = pathname !== "/" ? pathname.replace(/\/+$/, "") : "";
+  return new URL(normalizedPath || "/", siteUrl).toString().replace(/\/$/, normalizedPath ? "" : "/");
+}
+
+const canonical = normalizeCanonical(Astro.url.pathname);
 const socialImage = new URL(image, siteUrl).toString();
 const pathname = Astro.url.pathname;
 const defaultTheme = site.themes.find((theme) => theme.isDefault)?.name || "dark";

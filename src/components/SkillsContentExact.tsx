@@ -1,15 +1,5 @@
-import { motion, type Variants } from "framer-motion";
 import { skillCategories } from "@/data/site";
 import type { SkillCategory, SkillItem } from "@/types/content";
-
-const skillCardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.05, duration: 0.3, ease: "easeOut" }
-  })
-};
 
 function SkillCardContent({ skill }: { skill: SkillItem }) {
   return (
@@ -22,29 +12,21 @@ function SkillCardContent({ skill }: { skill: SkillItem }) {
   );
 }
 
-function SkillCard({ skill, index }: { skill: SkillItem; index: number }) {
-  const sharedProps = {
-    custom: index,
-    variants: skillCardVariants,
-    initial: "hidden" as const,
-    whileInView: "visible" as const,
-    viewport: { once: true, margin: "-50px" },
-    whileHover: { scale: 1.05, y: -5 },
-    className: `bg-secondary border-border flex flex-col items-center justify-center rounded-xl border p-6 transition-all duration-300 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 ${skill.websiteUrl ? "cursor-pointer" : ""}`
-  };
+function SkillCard({ skill }: { skill: SkillItem }) {
+  const className = `bg-secondary border-border flex flex-col items-center justify-center rounded-xl border p-6 transition-colors duration-300 hover:border-accent/50 ${skill.websiteUrl ? "cursor-pointer" : ""}`;
 
   if (skill.websiteUrl) {
     return (
-      <motion.a {...sharedProps} href={skill.websiteUrl} target="_blank" rel="noreferrer noopener" aria-label={skill.name}>
+      <a href={skill.websiteUrl} target="_blank" rel="noreferrer noopener" aria-label={skill.name} className={className}>
         <SkillCardContent skill={skill} />
-      </motion.a>
+      </a>
     );
   }
 
   return (
-    <motion.div {...sharedProps}>
+    <div className={className}>
       <SkillCardContent skill={skill} />
-    </motion.div>
+    </div>
   );
 }
 
@@ -60,8 +42,8 @@ export default function SkillsContentExact({ categories }: { categories?: SkillC
             {category.category}
           </h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {category.skills.map((skill, index) => (
-              <SkillCard key={skill.name} skill={skill} index={index} />
+            {category.skills.map((skill) => (
+              <SkillCard key={skill.name} skill={skill} />
             ))}
           </div>
         </div>

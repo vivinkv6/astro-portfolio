@@ -1,5 +1,3 @@
-import { motion, useInView, type Variants } from "framer-motion";
-import { useRef } from "react";
 import type { AcademicJourneyItem } from "@/types/content";
 
 const academicsData = [
@@ -53,44 +51,26 @@ const academicsData = [
   }
 ];
 
-const cardVariants: Variants = {
-  hidden: { opacity: 1, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.4, ease: "easeOut" }
-  })
-};
-
 export default function AcademicsContentExact({ journey }: { journey?: AcademicJourneyItem[] }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const source = journey?.length ? journey : academicsData.map((item) => ({ title: item.title, date: item.date, description: item.description }));
 
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <div className="bg-border absolute top-0 left-4 h-full w-0.5 md:left-1/2" />
 
       {source.map((item, index) => (
-        <motion.div
-          key={index}
-          custom={index}
-          variants={cardVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className={`relative mb-8 flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
-        >
+        <div key={index} className={`relative mb-8 flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
           <div className={`ml-12 md:w-1/2 ${index % 2 === 0 ? "md:pr-12" : "md:pl-12"}`}>
-            <motion.div whileHover={{ scale: 1.02 }} className="bg-secondary border-border rounded-xl border p-5 transition-all duration-300 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+            <div className="bg-secondary border-border rounded-xl border p-5">
               <span className="text-accent text-sm">{item.date}</span>
               <h3 className="text-neutral mt-1 text-lg font-semibold">{item.title}</h3>
               <p className="text-tertiary-content mt-3 text-sm leading-relaxed">{item.description}</p>
-            </motion.div>
+            </div>
           </div>
           <div className="bg-accent absolute top-5 left-4 flex size-8 items-center justify-center rounded-full md:left-1/2 md:-translate-x-1/2">
             <div className="bg-primary size-3 rounded-full" />
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

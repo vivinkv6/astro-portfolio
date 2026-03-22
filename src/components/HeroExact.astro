@@ -1,0 +1,72 @@
+---
+import { personalInfo } from "@/data/site";
+import HeroRoleSwitcher from "@/components/HeroRoleSwitcher";
+import type { HeroData } from "@/types/content";
+
+interface Props {
+  hero?: HeroData;
+}
+
+const { hero } = Astro.props;
+const roles = hero?.roles?.length ? hero.roles : ["FULL STACK DEVELOPER", "Vibe Coder", "REACT NATIVE DEV", "TECHNICAL SEO"];
+const title = hero?.title || `Hi - I'm ${personalInfo.name}`;
+const description = hero?.shortDescription || personalInfo.tagline;
+const image = hero?.image || "/assets/images/hero-image.png";
+const primaryButton = hero?.primaryButton || { label: "View Projects", href: "/project" };
+const secondaryButton = hero?.secondaryButton || { label: "View Blogs", href: "/blogs" };
+---
+
+<section class="bg-primary bg-small-glow bg-small-glow-position md:bg-large-glow-position lg:bg-large-glow flex min-h-[calc(100dvh-4rem)] flex-col justify-center bg-no-repeat">
+  <div class="mx-auto grid max-w-[1200px] grid-cols-1 gap-4 px-4 pt-8 pb-10 md:grid-cols-2 md:items-center lg:p-4">
+    <div class="hero-reveal order-2 flex min-h-48 flex-col justify-between md:order-1 lg:min-h-56 lg:max-w-[33.75rem]">
+      <h1>
+        <span class="hero-reveal hero-delay-1 text-neutral mb-2 block text-3xl font-bold">{title}</span>
+        <HeroRoleSwitcher roles={roles} client:load />
+      </h1>
+
+      <h2 class="hero-reveal hero-delay-3 text-neutral mt-3">{description}</h2>
+
+      <div class="hero-reveal hero-delay-4 mt-6 flex flex-wrap gap-6">
+        <a
+          href={primaryButton.href}
+          aria-label={primaryButton.label}
+          class="bg-accent min-w-32 cursor-pointer rounded-lg px-[14px] py-[10px] text-center text-sm font-medium text-[#00071E] transition-transform duration-200 hover:scale-105 active:scale-95"
+        >
+          {primaryButton.label}
+        </a>
+        <a
+          href={secondaryButton.href}
+          aria-label={secondaryButton.label}
+          class="text-neutral bg-secondary cursor-pointer rounded-lg px-[14px] py-[10px] text-sm transition-transform duration-200 hover:scale-105 active:scale-95"
+        >
+          {secondaryButton.label}
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual-reveal order-1 flex min-h-[18.75rem] items-center justify-center md:order-2 lg:min-h-[35rem]">
+      <div class="text-accent relative size-56 sm:size-60 md:size-[20rem] lg:size-[25.75rem]">
+        <img
+          src={image}
+          alt={`${personalInfo.name} - Full Stack Developer`}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          sizes="(min-width: 1024px) 25.75rem, (min-width: 768px) 20rem, (min-width: 640px) 15rem, 14rem"
+          class="absolute inset-0 h-full w-full object-contain p-7"
+        />
+        <svg
+          width="412"
+          height="413"
+          viewBox="0 0 412 413"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="hero-orbit absolute top-0 left-0 size-56 sm:size-60 md:size-[20rem] lg:size-[25.75rem]"
+          aria-hidden="true"
+        >
+          <circle cx="206" cy="206.401" r="204.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="18 36 54 72"></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>

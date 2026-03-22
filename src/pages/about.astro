@@ -21,5 +21,5 @@ const seo = resolveSeo(site, aboutPage.seo, {
   keywords={seo.keywords}
 >
   <AboutSectionExact about={aboutPage} client:load />
-  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} className="pt-8 pb-2" client:load />
+  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} className="pt-8 pb-2" />
 </BaseLayout>

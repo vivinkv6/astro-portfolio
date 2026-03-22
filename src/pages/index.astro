@@ -2,7 +2,7 @@
 import AboutSectionExact from "@/components/AboutSectionExact";
 import BlogSectionExact from "@/components/BlogSectionExact";
 import ExperienceSectionExact from "@/components/ExperienceSectionExact";
-import HeroExact from "@/components/HeroExact";
+import HeroExact from "@/components/HeroExact.astro";
 import ProjectSectionExact from "@/components/ProjectSectionExact";
 import SkillsStripExact from "@/components/SkillsStripExact";
 import { getAboutPageData, getAllBlogs, getAllProjects, getExperiencePageData, getHomePageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
@@ -26,8 +26,8 @@ const seo = resolveSeo(site, homePage.seo, {
 ---
 
 <BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
-  <HeroExact hero={homePage.hero} client:load />
-  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} client:load />
+  <HeroExact hero={homePage.hero} />
+  <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} />
   <AboutSectionExact about={aboutPage} client:load />
   <ExperienceSectionExact experiences={experiencePage.experiences} limit={2} title={experiencePage.pageHeading} client:load />
   <ProjectSectionExact projects={projects} limit={3} title="Latest Projects" client:load />

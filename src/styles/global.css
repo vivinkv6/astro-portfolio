@@ -213,6 +213,15 @@ img {
   }
 }
 
+@keyframes skills-marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 @media screen and (min-width: 1024px) {
   h2,
   h3 {
@@ -406,6 +415,37 @@ section {
   animation: hero-orbit-rotate 6s ease-in-out infinite alternate;
 }
 
+.skills-marquee-shell {
+  overflow: hidden;
+}
+
+.skills-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 2rem;
+  padding: 1.25rem;
+  animation: skills-marquee-slide 32s linear infinite;
+  will-change: transform;
+}
+
+.skills-marquee-item {
+  flex: 0 0 auto;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.skills-marquee-item:hover {
+  transform: scale(1.08);
+}
+
+@media (min-width: 1024px) {
+  .skills-marquee-track {
+    gap: 6rem;
+    padding: 1.75rem;
+  }
+}
+
 .error-shell {
   backdrop-filter: blur(16px);
 }
@@ -546,6 +586,7 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .skills-marquee-track,
   .error-aurora,
   .error-orbit-ring-outer,
   .error-orbit-ring-middle,

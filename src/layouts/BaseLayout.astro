@@ -61,6 +61,16 @@ const faviconUrl =
   site.favicon ||
   "https://res.cloudinary.com/dwwkqmedh/image/upload/v1772984186/favicon_2a1260f3bd.ico";
 
+function normalizeSnippet(snippet?: string) {
+  const content = snippet?.trim();
+  if (!content) return null;
+
+  return {
+    content,
+    isHtml: content.startsWith("<")
+  };
+}
+
 function themeCss(theme: ThemeOption) {
   if (!theme.tokens) return "";
 
@@ -86,6 +96,10 @@ const themeInitScript = `(() => {
   const storedTheme = localStorage.getItem("theme") || defaultTheme;
   document.documentElement.setAttribute("data-theme", storedTheme);
 })();`;
+const headSnippet = normalizeSnippet(site.gtm?.headScript);
+const otherHeadSnippet = normalizeSnippet(site.gtm?.otherScript);
+const bodySnippet = normalizeSnippet(site.gtm?.bodyScript);
+const extraSnippet = normalizeSnippet(extraJs);
 const baseSchemas = [
   createWebsiteSchema(site),
   createPersonSchema(site, description, image, experiencePage.experiences, educationPage.items, skillsPage.categories)
@@ -116,9 +130,12 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     <link rel="icon" type="image/x-icon" href={faviconUrl} />
     {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
     <script is:inline set:html={themeInitScript}></script>
-    {site.gtm?.headScript ? <script is:inline set:html={site.gtm.headScript}></script> : null}
-    {site.gtm?.otherScript ? <script is:inline set:html={site.gtm.otherScript}></script> : null}
-    {extraJs ? <script is:inline set:html={extraJs}></script> : null}
+    {headSnippet?.isHtml ? <Fragment set:html={headSnippet.content} /> : null}
+    {headSnippet && !headSnippet.isHtml ? <script is:inline set:html={headSnippet.content}></script> : null}
+    {otherHeadSnippet?.isHtml ? <Fragment set:html={otherHeadSnippet.content} /> : null}
+    {otherHeadSnippet && !otherHeadSnippet.isHtml ? <script is:inline set:html={otherHeadSnippet.content}></script> : null}
+    {extraSnippet?.isHtml ? <Fragment set:html={extraSnippet.content} /> : null}
+    {extraSnippet && !extraSnippet.isHtml ? <script is:inline set:html={extraSnippet.content}></script> : null}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -128,7 +145,8 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)}></script>
   </head>
   <body>
-    {site.gtm?.bodyScript ? <Fragment set:html={site.gtm.bodyScript} /> : null}
+    {bodySnippet?.isHtml ? <Fragment set:html={bodySnippet.content} /> : null}
+    {bodySnippet && !bodySnippet.isHtml ? <script is:inline set:html={bodySnippet.content}></script> : null}
     <header>
       <Navbar pathname={pathname} navItems={site.headerLinks} siteName={site.siteName} client:load />
     </header>

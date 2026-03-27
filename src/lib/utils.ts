@@ -19,3 +19,9 @@ export function formatDate(value: string) {
 export function excerpt(value: string, limit = 140) {
   return value.length <= limit ? value : `${value.slice(0, limit).trim()}...`;
 }
+
+export function normalizeRichTextHeadings(value?: string) {
+  if (!value) return "";
+
+  return value.replace(/<\s*\/?\s*h1\b/gi, (match) => match.replace(/h1/gi, "h2"));
+}

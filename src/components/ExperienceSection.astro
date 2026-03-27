@@ -13,6 +13,13 @@ const { experiences, title = "Experience", limit } = Astro.props;
 const source = experiences?.length ? experiences : fallbackExperiences;
 const displayExperiences = typeof limit === "number" ? source.slice(0, limit) : source;
 const showViewMore = typeof limit === "number" && source.length > limit;
+
+function hasValidExternalLink(link?: string) {
+  if (!link) return false;
+
+  const value = link.trim();
+  return value.length > 0 && value !== "#";
+}
 ---
 
 <section id="experience" class="py-16">
@@ -24,9 +31,13 @@ const showViewMore = typeof limit === "number" && source.length > limit;
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="flex-1">
               <h3 class="text-accent text-xl font-semibold">{item.role}</h3>
-              <a href={item.link} target="_blank" rel="noreferrer" class="text-primary-content hover:text-accent text-lg">
-                {item.company}
-              </a>
+              {hasValidExternalLink(item.link) ? (
+                <a href={item.link} target="_blank" rel="noreferrer" class="text-primary-content hover:text-accent text-lg">
+                  {item.company}
+                </a>
+              ) : (
+                <p class="text-primary-content text-lg">{item.company}</p>
+              )}
               <p class="text-tertiary-content mt-1 text-sm">{item.date}</p>
             </div>
           </div>
@@ -43,7 +54,7 @@ const showViewMore = typeof limit === "number" && source.length > limit;
     </div>
     {showViewMore ? (
       <div class="mt-8 text-center">
-        <a href="/experience" class="text-accent text-sm font-medium">View More Experience →</a>
+        <a href="/experience" class="text-accent text-sm font-medium">View More Experience &rarr;</a>
       </div>
     ) : null}
   </div>

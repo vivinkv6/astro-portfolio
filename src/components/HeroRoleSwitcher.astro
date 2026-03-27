@@ -1,0 +1,65 @@
+---
+interface Props {
+  roles: string[];
+}
+
+const { roles } = Astro.props;
+const initialRole = roles[0] || "";
+---
+
+<span class="hero-reveal hero-delay-2 text-accent block text-[1.75rem] font-bold" data-role-switcher data-roles={JSON.stringify(roles)}>
+  {initialRole}
+</span>
+
+<script is:inline>
+  (() => {
+    const element = document.querySelector("[data-role-switcher]");
+    if (!(element instanceof HTMLElement)) return;
+
+    const roles = JSON.parse(element.dataset.roles || "[]");
+    if (!Array.isArray(roles) || roles.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let roleIndex = 0;
+    let frameId = 0;
+    let timeoutId = 0;
+
+    const step = () => {
+      const currentRole = roles[roleIndex];
+      const nextRole = roles[(roleIndex + 1) % roles.length];
+      const maxLength = Math.max(currentRole.length, nextRole.length);
+      let iteration = 0;
+
+      const animate = () => {
+        const revealedChars = nextRole.slice(0, Math.floor(iteration));
+        const hiddenChars = nextRole.slice(Math.floor(iteration));
+        const scrambled = hiddenChars
+          .split("")
+          .map(() => chars[Math.floor(Math.random() * chars.length)])
+          .join("");
+
+        element.textContent = revealedChars + scrambled;
+
+        if (iteration < maxLength) {
+          iteration += 0.2;
+          frameId = window.requestAnimationFrame(animate);
+        } else {
+          element.textContent = nextRole;
+          roleIndex = (roleIndex + 1) % roles.length;
+          timeoutId = window.setTimeout(step, 2000);
+        }
+      };
+
+      timeoutId = window.setTimeout(() => {
+        frameId = window.requestAnimationFrame(animate);
+      }, 1500);
+    };
+
+    step();
+    window.addEventListener("beforeunload", () => {
+      window.clearTimeout(timeoutId);
+      window.cancelAnimationFrame(frameId);
+    });
+  })();
+</script>

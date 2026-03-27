@@ -1,0 +1,151 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  pathname: string;
+  navItems?: NavItem[];
+  siteName?: string;
+}
+
+const defaultNavItems: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Education", href: "/education" },
+  { label: "Academics", href: "/academics" },
+  { label: "Experience", href: "/experience" },
+  { label: "Project", href: "/project" },
+  { label: "Skills", href: "/skills" },
+  { label: "Blogs", href: "/blogs" }
+];
+
+const { pathname, navItems = defaultNavItems, siteName = "Vivin KV" } = Astro.props;
+
+function normalizePath(path: string) {
+  if (!path) return "/";
+
+  const normalized = path.replace(/\/+$/, "");
+  return normalized || "/";
+}
+
+function isNavItemActive(currentPath: string, itemHref: string) {
+  const normalizedCurrentPath = normalizePath(currentPath);
+  const normalizedItemHref = normalizePath(itemHref);
+
+  if (normalizedItemHref === "/") {
+    return normalizedCurrentPath === "/";
+  }
+
+  return normalizedCurrentPath === normalizedItemHref || normalizedCurrentPath.startsWith(`${normalizedItemHref}/`);
+}
+
+const normalizedPathname = normalizePath(pathname);
+---
+
+<nav class="border-border bg-primary sticky top-0 z-40 h-16 border-b backdrop-blur" data-navbar-root>
+  <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4">
+    <a href="/" class="flex items-center gap-2">
+      <svg width="28" height="24" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M29.2323 29.9192C30.0404 29.9192 30.8283 29.5354 31.3333 28.9091L39.2121 18.8687C40.2626 17.5151 40.2626 15.6364 39.2121 14.2828L31.3333 4.24242C30.8283 3.59596 30.0606 3.23232 29.2323 3.23232H26.5455L25.0101 6.92929H26.9697C27.5556 6.92929 28.1212 7.19192 28.4848 7.65656L34.1818 14.9293C34.9495 15.899 34.9495 17.2727 34.1818 18.2424L28.4848 25.5151C28.1212 25.9798 27.5556 26.2424 26.9697 26.2424H15.697L14.1414 29.9192H29.2323Z" fill="url(#n0)"></path>
+        <path d="M10.7677 0C9.9596 0 9.17172 0.383838 8.66667 1.0101L0.787879 11.0505C-0.262626 12.404 -0.262626 14.2828 0.787879 15.6364L8.66667 25.6768C9.17172 26.3232 9.93939 26.6869 10.7677 26.6869H13.4545L14.9899 22.9899H13.0303C12.4444 22.9899 11.8788 22.7273 11.5152 22.2626L5.81818 14.9899C5.0505 14.0202 5.0505 12.6465 5.81818 11.6768L11.5152 4.40404C11.8788 3.93939 12.4444 3.67677 13.0303 3.67677H24.303L25.8586 0H10.7677Z" fill="url(#n1)"></path>
+        <defs>
+          <linearGradient id="n0" x1="41" y1="16.5" x2="21" y2="16.5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="var(--gradient-start)"></stop>
+            <stop offset="1" stop-color="var(--gradient-mid)" stop-opacity="0"></stop>
+          </linearGradient>
+          <linearGradient id="n1" x1="-1" y1="13.3" x2="18" y2="13.3" gradientUnits="userSpaceOnUse">
+            <stop stop-color="var(--gradient-start)"></stop>
+            <stop offset="1" stop-color="var(--gradient-mid)" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="text-neutral font-semibold whitespace-nowrap">{siteName}</span>
+    </a>
+
+    <button
+      type="button"
+      class="text-primary-content md:hidden"
+      data-navbar-toggle
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      Menu
+    </button>
+
+    <ul
+      class="hidden bg-primary absolute inset-x-0 top-16 z-40 min-h-[calc(100dvh-4rem)] flex-col md:static md:flex md:min-h-0 md:flex-row md:items-center md:gap-6"
+      data-navbar-menu
+    >
+      {navItems.map((item) => {
+        const isActive = isNavItemActive(normalizedPathname, item.href);
+
+        return (
+          <li class="border-border border-b px-6 py-4 md:border-none md:px-0 md:py-0">
+            <a
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              class={`navbar-link ${isActive ? "navbar-link-active" : "navbar-link-inactive"} inline-flex w-auto items-center`}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</nav>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector("[data-navbar-root]");
+    if (!root) return;
+
+    const button = root.querySelector("[data-navbar-toggle]");
+    const menu = root.querySelector("[data-navbar-menu]");
+    if (!(button instanceof HTMLButtonElement) || !(menu instanceof HTMLElement)) return;
+
+    const closeMenu = () => {
+      button.setAttribute("aria-expanded", "false");
+      button.textContent = "Menu";
+      menu.classList.add("hidden");
+      menu.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+
+    const openMenu = () => {
+      button.setAttribute("aria-expanded", "true");
+      button.textContent = "Close";
+      menu.classList.remove("hidden");
+      menu.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    };
+
+    button.addEventListener("click", () => {
+      const isOpen = button.getAttribute("aria-expanded") === "true";
+      if (isOpen) closeMenu();
+      else openMenu();
+    });
+
+    menu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const syncLayout = () => {
+      if (mediaQuery.matches) {
+        document.body.style.overflow = "";
+        button.setAttribute("aria-expanded", "false");
+        button.textContent = "Menu";
+        menu.classList.remove("hidden");
+        menu.classList.remove("flex");
+      } else if (button.getAttribute("aria-expanded") !== "true") {
+        menu.classList.add("hidden");
+      }
+    };
+
+    syncLayout();
+    mediaQuery.addEventListener("change", syncLayout);
+  })();
+</script>

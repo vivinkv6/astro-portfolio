@@ -55,7 +55,16 @@ const structuredData = [
         <p class="text-primary-content mt-4 text-lg leading-8">{project.shortDescription}</p>
       </div>
       <div class="bg-primary/40 border-border overflow-hidden rounded-3xl border p-6">
-        <img src={project.cover} alt={project.title} class="aspect-[16/10] w-full object-contain" />
+        <img
+          src={project.cover}
+          alt={project.title}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          width="1280"
+          height="800"
+          class="aspect-[16/10] w-full object-contain"
+        />
       </div>
       <div class="mt-8 flex flex-wrap gap-3">
         {project.livePreview ? (

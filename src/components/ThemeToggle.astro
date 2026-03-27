@@ -1,0 +1,109 @@
+---
+import type { ThemeOption } from "@/types/content";
+import { CheckIcon, CloseIcon } from "@/utils/icons";
+
+type Props = {
+  themes: ThemeOption[];
+  defaultTheme?: string;
+};
+
+const { themes, defaultTheme = "dark" } = Astro.props;
+---
+
+<div class="fixed right-6 bottom-4 z-50 md:right-11 md:bottom-11" data-theme-toggle-root data-default-theme={defaultTheme}>
+  <button type="button" class="bg-neutral cursor-pointer rounded-full p-1.5 md:p-2" aria-label="Choose theme" data-theme-toggle-button>
+    <div class="bg-primary grid grid-cols-2 place-content-center gap-0.5 rounded-full p-1.5 md:p-2">
+      <div class="size-[7px] rounded-t-full rounded-bl-full bg-[#B13753] md:size-[10px]"></div>
+      <div class="size-[7px] rounded-t-full rounded-br-full bg-[#BAA32B] md:size-[10px]"></div>
+      <div class="size-[7px] rounded-tl-full rounded-b-full bg-[#3178C6] md:size-[10px]"></div>
+      <div class="size-[7px] rounded-tr-full rounded-b-full bg-[#50B359] md:size-[10px]"></div>
+    </div>
+  </button>
+
+  <div class="bg-secondary animate-fade-in border-border absolute right-0 bottom-full mb-5 hidden space-y-3 rounded-xl border p-3 md:space-y-4 md:p-5" data-theme-toggle-panel>
+    <div class="text-primary-content border-border flex items-center justify-between border-b pb-3 md:pb-4">
+      <span class="text-sm md:text-base">_select-theme</span>
+      <button type="button" class="cursor-pointer" aria-label="Close theme selector" data-theme-close>
+        <CloseIcon className="h-3 w-3 md:h-4 md:w-4" />
+      </button>
+    </div>
+    {themes.map((item) => (
+      <button
+        type="button"
+        class="theme-option-button flex min-w-48 cursor-pointer items-center justify-between rounded-lg p-2 text-left md:min-w-60 md:rounded-xl md:p-4"
+        style={{ background: item.colors[0], color: item.colors[1] }}
+        data-theme-option
+        data-theme-name={item.name}
+      >
+        <div class="flex items-end gap-1.5">
+          <CheckIcon className={`theme-option-check ${item.name === defaultTheme ? "block" : "hidden"}`} />
+          <span class="text-sm md:text-base">{item.label}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          {item.colors.slice(1).map((color) => (
+            <div class="size-2 rounded-full md:size-3" style={{ background: color }} />
+          ))}
+        </div>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector("[data-theme-toggle-root]");
+    if (!(root instanceof HTMLElement)) return;
+
+    const defaultTheme = root.dataset.defaultTheme || "dark";
+    const button = root.querySelector("[data-theme-toggle-button]");
+    const panel = root.querySelector("[data-theme-toggle-panel]");
+    const closeButton = root.querySelector("[data-theme-close]");
+    if (!(button instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) return;
+
+    const syncChecks = (theme) => {
+      root.querySelectorAll("[data-theme-option]").forEach((option) => {
+        const check = option.querySelector(".theme-option-check");
+        const isActive = option.getAttribute("data-theme-name") === theme;
+        check?.classList.toggle("hidden", !isActive);
+        check?.classList.toggle("block", isActive);
+      });
+    };
+
+    const closePanel = () => {
+      panel.classList.add("hidden");
+    };
+
+    const openPanel = () => {
+      panel.classList.remove("hidden");
+    };
+
+    const currentTheme = window.localStorage.getItem("theme") || defaultTheme;
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    syncChecks(currentTheme);
+
+    button.addEventListener("click", () => {
+      if (panel.classList.contains("hidden")) openPanel();
+      else closePanel();
+    });
+
+    closeButton?.addEventListener("click", closePanel);
+
+    root.querySelectorAll("[data-theme-option]").forEach((option) => {
+      option.addEventListener("click", () => {
+        const nextTheme = option.getAttribute("data-theme-name");
+        if (!nextTheme) return;
+
+        window.localStorage.setItem("theme", nextTheme);
+        document.documentElement.setAttribute("data-theme", nextTheme);
+        syncChecks(nextTheme);
+        closePanel();
+      });
+    });
+
+    document.addEventListener("mousedown", (event) => {
+      if (!root.contains(event.target)) {
+        closePanel();
+      }
+    });
+  })();
+</script>

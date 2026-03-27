@@ -80,8 +80,21 @@
   --background-image-skill-gradient: linear-gradient(to right, var(--p), #062b48, var(--p));
   --background-position-large-glow-position: 110% 30%;
   --background-position-small-glow-position: 50% 600%;
-  --font-fira-code: Fira Code, monospace;
-  --font-inter: Inter, sans-serif;
+  --font-fira-code:
+    "Fira Code",
+    "JetBrains Mono",
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Segoe UI Mono",
+    ui-monospace,
+    monospace;
+  --font-inter:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
 html {
@@ -107,14 +120,14 @@ html::-webkit-scrollbar,
 body {
   background: var(--color-primary);
   color: white;
-  font-family: "Fira Code", monospace;
+  font-family: var(--font-fira-code);
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 .font-inter,
 .inter {
-  font-family: Inter, sans-serif;
+  font-family: var(--font-inter);
 }
 
 a,

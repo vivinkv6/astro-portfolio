@@ -1,6 +1,6 @@
 ---
 import { personalInfo } from "@/data/site";
-import HeroRoleSwitcher from "@/components/HeroRoleSwitcher";
+import HeroRoleSwitcher from "@/components/HeroRoleSwitcher.astro";
 import type { HeroData } from "@/types/content";
 
 interface Props {
@@ -21,7 +21,7 @@ const secondaryButton = hero?.secondaryButton || { label: "View Blogs", href: "/
     <div class="hero-reveal order-2 flex min-h-48 flex-col justify-between md:order-1 lg:min-h-56 lg:max-w-[33.75rem]">
       <h1>
         <span class="hero-reveal hero-delay-1 text-neutral mb-2 block text-3xl font-bold">{title}</span>
-        <HeroRoleSwitcher roles={roles} client:load />
+        <HeroRoleSwitcher roles={roles} />
       </h1>
 
       <h2 class="hero-reveal hero-delay-3 text-neutral mt-3">{description}</h2>
@@ -52,6 +52,8 @@ const secondaryButton = hero?.secondaryButton || { label: "View Blogs", href: "/
           loading="eager"
           fetchpriority="high"
           decoding="async"
+          width="412"
+          height="413"
           sizes="(min-width: 1024px) 25.75rem, (min-width: 768px) 20rem, (min-width: 640px) 15rem, 14rem"
           class="absolute inset-0 h-full w-full object-contain p-7"
         />

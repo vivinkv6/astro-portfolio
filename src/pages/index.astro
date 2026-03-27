@@ -25,7 +25,14 @@ const seo = resolveSeo(site, homePage.seo, {
 });
 ---
 
-<BaseLayout title={seo.title} description={seo.description} image={seo.image} extraJs={seo.extraJs} keywords={seo.keywords}>
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  preloadImage={homePage.hero.image}
+  extraJs={seo.extraJs}
+  keywords={seo.keywords}
+>
   <HeroExact hero={homePage.hero} />
   <SkillsStripExact skills={skillsPage.categories.flatMap((category) => category.skills)} />
   <AboutSection about={aboutPage} />

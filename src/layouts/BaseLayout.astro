@@ -1,8 +1,8 @@
 ---
 import "@/styles/global.css";
 import Footer from "@/components/Footer.astro";
-import Navbar from "@/components/Navbar";
-import ThemeToggle from "@/components/ThemeToggle";
+import Navbar from "@/components/Navbar.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
 import { getEducationPageData, getExperiencePageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
 import { createPersonSchema, createWebsiteSchema } from "@/lib/schema";
 import { siteUrl } from "@/lib/utils";
@@ -12,6 +12,7 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  preloadImage?: string;
   extraJs?: string;
   keywords?: string[];
   ogTitle?: string;
@@ -35,6 +36,7 @@ const {
   title = site.defaultSeo.title || `${site.personName} | ${site.jobTitle}`,
   description = site.defaultSeo.description || site.tagline,
   image = site.defaultSeo.ogImage || site.socialImage || "/assets/images/hero-image.png",
+  preloadImage,
   extraJs,
   keywords,
   ogTitle = title,
@@ -128,6 +130,7 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     <meta property="twitter:description" content={twitterDescription} />
     <meta property="twitter:image" content={socialImage} />
     <link rel="icon" type="image/x-icon" href={faviconUrl} />
+    {preloadImage ? <link rel="preload" as="image" href={new URL(preloadImage, siteUrl).toString()} /> : null}
     {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
     <script is:inline set:html={themeInitScript}></script>
     {headSnippet?.isHtml ? <Fragment set:html={headSnippet.content} /> : null}
@@ -136,24 +139,18 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     {otherHeadSnippet && !otherHeadSnippet.isHtml ? <script is:inline set:html={otherHeadSnippet.content}></script> : null}
     {extraSnippet?.isHtml ? <Fragment set:html={extraSnippet.content} /> : null}
     {extraSnippet && !extraSnippet.isHtml ? <script is:inline set:html={extraSnippet.content}></script> : null}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)}></script>
   </head>
   <body>
     {bodySnippet?.isHtml ? <Fragment set:html={bodySnippet.content} /> : null}
     {bodySnippet && !bodySnippet.isHtml ? <script is:inline set:html={bodySnippet.content}></script> : null}
     <header>
-      <Navbar pathname={pathname} navItems={site.headerLinks} siteName={site.siteName} client:load />
+      <Navbar pathname={pathname} navItems={site.headerLinks} siteName={site.siteName} />
     </header>
     <main class={mainClass}>
       <slot />
     </main>
-    {hideThemeToggle ? null : <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} client:idle />}
+    {hideThemeToggle ? null : <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} />}
     {hideFooter ? null : <Footer site={site} />}
   </body>
 </html>

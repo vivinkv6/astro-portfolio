@@ -22,7 +22,13 @@ const showViewMore = typeof limit === "number" && blogs.length > limit;
         <article class="bg-secondary border-border glow-panel overflow-hidden rounded-2xl border">
           <a href={`/blogs/${blog.slug}`}>
             <div class="aspect-[16/10] overflow-hidden">
-              <img src={blog.coverImage || "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop"} alt={blog.title} class="h-full w-full object-cover transition duration-300 hover:scale-105" />
+              <img
+                src={blog.coverImage || "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop"}
+                alt={blog.title}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover transition duration-300 hover:scale-105"
+              />
             </div>
           </a>
           <div class="space-y-4 p-5">

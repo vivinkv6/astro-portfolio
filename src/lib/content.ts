@@ -101,6 +101,7 @@ const fallbackSiteConfig: SiteConfig = {
   phone: personalInfo.phone,
   location: personalInfo.location,
   resumeUrl: personalInfo.resumeUrl,
+  favicon: "https://res.cloudinary.com/dwwkqmedh/image/upload/v1772984186/favicon_2a1260f3bd.ico",
   headerLinks: footerLinks.slice(0, 8).map((item) => ({ label: item.title, href: item.href })),
   footerGroups: [
     {

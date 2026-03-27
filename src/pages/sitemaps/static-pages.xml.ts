@@ -9,8 +9,7 @@ const staticRoutes = [
   "/experience",
   "/project",
   "/skills",
-  "/blogs",
-  "/testimonials"
+  "/blogs"
 ];
 
 export const GET: APIRoute = async () => renderUrlSet(staticRoutes);

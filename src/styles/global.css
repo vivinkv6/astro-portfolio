@@ -127,7 +127,7 @@ html::-webkit-scrollbar,
 body {
   background: var(--color-primary);
   color: white;
-  font-family: var(--font-inter);
+  font-family: var(--font-fira-code);
   font-optical-sizing: auto;
   font-style: normal;
 }

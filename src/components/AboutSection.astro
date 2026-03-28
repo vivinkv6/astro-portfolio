@@ -39,8 +39,12 @@ const stats =
           <img
             src={about?.image || "/assets/images/profile-image.png"}
             alt="Vivin KV profile"
-            loading="lazy"
+            loading="eager"
+            fetchpriority="high"
             decoding="async"
+            width="640"
+            height="640"
+            sizes="(min-width: 768px) 24rem, (min-width: 640px) 22rem, calc(100vw - 2rem)"
             class="h-full w-full object-contain"
           />
         </div>

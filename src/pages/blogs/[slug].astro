@@ -2,7 +2,7 @@
 import { getAllBlogs, getBlogBySlug, getSiteConfig } from "@/lib/content";
 import { createBlogPostingSchema, createBreadcrumbSchema } from "@/lib/schema";
 import { resolveSeo } from "@/lib/seo";
-import { excerpt, formatDate, normalizeRichTextHeadings } from "@/lib/utils";
+import { excerpt, formatDate, normalizeRichTextHeadings, siteUrl } from "@/lib/utils";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
@@ -22,7 +22,7 @@ if (!blog) {
 const site = await getSiteConfig();
 const blogDescription = excerpt(blog.content, 155);
 const normalizedBlogContentHtml = normalizeRichTextHeadings(blog.contentHtml);
-const blogUrl = new URL(`/blogs/${blog.slug}`, Astro.url.origin).toString();
+const blogUrl = new URL(`/blogs/${blog.slug}`, siteUrl).toString();
 const seo = resolveSeo(site, blog.seo, {
   title: `${blog.title} | ${site.personName}`,
   description: blogDescription,

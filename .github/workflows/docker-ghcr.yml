@@ -67,11 +67,15 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Trigger Coolify deployment
-        if: ${{ secrets.COOLIFY_WEBHOOK != '' && secrets.COOLIFY_TOKEN != '' }}
         env:
           COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
         run: |
+          if [ -z "$COOLIFY_WEBHOOK" ] || [ -z "$COOLIFY_TOKEN" ]; then
+            echo "Coolify webhook/token not configured; skipping deploy trigger."
+            exit 0
+          fi
+
           webhook="$(printf '%s' "$COOLIFY_WEBHOOK" | tr -d '\r\n')"
           token="$(printf '%s' "$COOLIFY_TOKEN" | tr -d '\r\n')"
           curl --fail --show-error --silent --request GET "$webhook" \

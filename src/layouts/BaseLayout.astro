@@ -118,7 +118,7 @@ const linkNormalizationScript = `(() => {
       const incomingApex = getApexDomain(incomingHost);
 
       if (incomingHost === currentHost || incomingApex === currentApex) {
-        anchor.setAttribute("href", `${url.pathname || "/"}${url.search}${url.hash}`);
+        anchor.setAttribute("href", (url.pathname || "/") + url.search + url.hash);
       }
     } catch {
       // Ignore malformed hrefs and leave them untouched.

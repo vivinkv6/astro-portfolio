@@ -98,6 +98,33 @@ const themeInitScript = `(() => {
   const storedTheme = localStorage.getItem("theme") || defaultTheme;
   document.documentElement.setAttribute("data-theme", storedTheme);
 })();`;
+const linkNormalizationScript = `(() => {
+  const currentHost = window.location.hostname.toLowerCase();
+  const getApexDomain = (hostname) => {
+    const parts = hostname.split(".").filter(Boolean);
+    return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
+  };
+  const currentApex = getApexDomain(currentHost);
+
+  document.querySelectorAll("a[href]").forEach((anchor) => {
+    const rawHref = anchor.getAttribute("href");
+    if (!rawHref || rawHref.startsWith("/") || rawHref.startsWith("#") || rawHref.startsWith("mailto:") || rawHref.startsWith("tel:")) {
+      return;
+    }
+
+    try {
+      const url = new URL(rawHref, window.location.origin);
+      const incomingHost = url.hostname.toLowerCase();
+      const incomingApex = getApexDomain(incomingHost);
+
+      if (incomingHost === currentHost || incomingApex === currentApex) {
+        anchor.setAttribute("href", `${url.pathname || "/"}${url.search}${url.hash}`);
+      }
+    } catch {
+      // Ignore malformed hrefs and leave them untouched.
+    }
+  });
+})();`;
 const headSnippet = normalizeSnippet(site.gtm?.headScript);
 const otherHeadSnippet = normalizeSnippet(site.gtm?.otherScript);
 const bodySnippet = normalizeSnippet(site.gtm?.bodyScript);
@@ -152,5 +179,6 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     </main>
     {hideThemeToggle ? null : <ThemeToggle themes={site.themes} defaultTheme={defaultTheme} />}
     {hideFooter ? null : <Footer site={site} />}
+    <script is:inline set:html={linkNormalizationScript}></script>
   </body>
 </html>

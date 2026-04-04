@@ -25,6 +25,7 @@ const baseURL = rawBaseURL
     ? rawBaseURL.replace(/\/$/, "")
     : `${rawBaseURL.replace(/\/$/, "")}/api`
   : "";
+const publicSiteUrl = import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321";
 
 const authToken = import.meta.env.STRAPI_TOKEN;
 
@@ -112,11 +113,36 @@ export function normalizeButtons(items: any[] | undefined): NavItem[] {
 
 export function normalizeHref(value?: string | null) {
   if (!value) return "/";
-  if (/^https?:\/\//i.test(value) || value.startsWith("mailto:") || value.startsWith("tel:") || value.startsWith("#")) {
+
+  if (value.startsWith("mailto:") || value.startsWith("tel:") || value.startsWith("#")) {
+    return value;
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value);
+      const publicUrl = new URL(publicSiteUrl);
+      const incomingHost = url.hostname.toLowerCase();
+      const publicHost = publicUrl.hostname.toLowerCase();
+      const sameHost = incomingHost === publicHost;
+      const sameApexDomain = getApexDomain(incomingHost) === getApexDomain(publicHost);
+
+      if (sameHost || sameApexDomain) {
+        return `${url.pathname || "/"}${url.search}${url.hash}`;
+      }
+    } catch {
+      return value;
+    }
+
     return value;
   }
 
   return value.startsWith("/") ? value : `/${value}`;
+}
+
+function getApexDomain(hostname: string) {
+  const parts = hostname.split(".").filter(Boolean);
+  return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
 }
 
 export function plainText(value: any) {

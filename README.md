@@ -51,3 +51,5 @@ Because this Astro app is built as a static site inside GitHub Actions, add thes
 `STRAPI_TOKEN` is optional and is not required for the current deployment flow because this frontend can read public Strapi content without authentication.
 
 This image serves the static site over port `80` inside the container. In Coolify, set the exposed port to `80`.
+
+When using `docker-compose.ghcr.yml` in Coolify, the service should stay on internal container port `80` only. Do not publish it to a host port like `4321:80` unless you intentionally want to access it directly outside Coolify. Let Coolify's proxy route the domain to the container instead.

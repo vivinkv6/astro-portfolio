@@ -46,7 +46,8 @@ For automatic redeploys after each successful image push, add these GitHub Actio
 
 Because this Astro app is built as a static site inside GitHub Actions, add these GitHub repository values for the Docker build too:
 
-- Repository variables: `PUBLIC_SITE_URL`, `STRAPI_API_URL`, `STRAPI_URL`, `CONTACT_FORM_ACTION_URL`
-- Repository secret: `STRAPI_TOKEN` (passed as a Docker build secret, not a normal build arg)
+- Repository variables: `PUBLIC_SITE_URL`, `STRAPI_API_URL`
 
-This image serves the static site over port `80` inside the container. In Coolify, set the exposed port to `80`.
+`STRAPI_TOKEN` is optional and is not required for the current deployment flow because this frontend can read public Strapi content without authentication.
+
+This image serves the static site over port `4321` inside the container. In Coolify, set the exposed port to `4321`.

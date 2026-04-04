@@ -59,17 +59,18 @@ jobs:
           build-args: |
             PUBLIC_SITE_URL=${{ vars.PUBLIC_SITE_URL }}
             STRAPI_API_URL=${{ vars.STRAPI_API_URL }}
-            STRAPI_URL=${{ vars.STRAPI_URL }}
-            CONTACT_FORM_ACTION_URL=${{ vars.CONTACT_FORM_ACTION_URL }}
-          secrets: |
-            STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Trigger Coolify deployment
-        if: ${{ secrets.COOLIFY_WEBHOOK != '' && secrets.COOLIFY_TOKEN != '' }}
+        if: ${{ env.COOLIFY_WEBHOOK != '' && env.COOLIFY_TOKEN != '' }}
+        env:
+          COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
         run: |
-          curl --fail --request GET "${{ secrets.COOLIFY_WEBHOOK }}" \
-            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
+          webhook="$(printf '%s' "$COOLIFY_WEBHOOK" | tr -d '\r\n')"
+          token="$(printf '%s' "$COOLIFY_TOKEN" | tr -d '\r\n')"
+          curl --fail --request GET "$webhook" \
+            --header "Authorization: Bearer $token"

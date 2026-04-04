@@ -19,7 +19,7 @@ type MinimalDocumentResponseCollection<T extends StrapiDocument = StrapiDocument
   meta?: unknown;
 };
 
-const rawBaseURL = import.meta.env.STRAPI_API_URL || import.meta.env.STRAPI_URL || "http://localhost:1337";
+const rawBaseURL = import.meta.env.STRAPI_API_URL || "http://localhost:1337";
 const baseURL = rawBaseURL
   ? rawBaseURL.replace(/\/$/, "").endsWith("/api")
     ? rawBaseURL.replace(/\/$/, "")

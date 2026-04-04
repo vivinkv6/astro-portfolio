@@ -5,27 +5,21 @@ WORKDIR /app
 
 ARG PUBLIC_SITE_URL
 ARG STRAPI_API_URL
-ARG STRAPI_URL
-ARG CONTACT_FORM_ACTION_URL
 
 ENV PUBLIC_SITE_URL=$PUBLIC_SITE_URL
 ENV STRAPI_API_URL=$STRAPI_API_URL
-ENV STRAPI_URL=$STRAPI_URL
-ENV CONTACT_FORM_ACTION_URL=$CONTACT_FORM_ACTION_URL
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN --mount=type=secret,id=STRAPI_TOKEN \
-  export STRAPI_TOKEN="$(cat /run/secrets/STRAPI_TOKEN 2>/dev/null || true)" && \
-  npm run build
+RUN npm run build
 
 FROM nginx:1.27-alpine AS runtime
 
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 4321
 
 CMD ["nginx", "-g", "daemon off;"]

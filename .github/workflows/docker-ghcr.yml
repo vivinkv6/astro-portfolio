@@ -60,8 +60,9 @@ jobs:
             PUBLIC_SITE_URL=${{ vars.PUBLIC_SITE_URL }}
             STRAPI_API_URL=${{ vars.STRAPI_API_URL }}
             STRAPI_URL=${{ vars.STRAPI_URL }}
-            STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
             CONTACT_FORM_ACTION_URL=${{ vars.CONTACT_FORM_ACTION_URL }}
+          secrets: |
+            STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

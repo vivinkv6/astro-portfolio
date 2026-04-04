@@ -2,10 +2,8 @@ import type { FooterGroup, SiteConfig, SocialLink, ThemeOption } from "@/types/c
 import { getSingleItem, getStrapiClient, isStrapiConfigured, normalizeButtons, normalizeMedia, safeStrapi } from "@/lib/strapi";
 
 const fallbackThemes: ThemeOption[] = [
-  { name: "light", label: "Light", colors: ["#fff", "#0d1a3b", "#dbe3f7", "#0d1a3b", "#5565e8"] },
-  { name: "dark", label: "Dark", colors: ["#011627", "#607b96", "#062b48", "#5565e8", "#18f2e5"] },
-  { name: "aqua", label: "Aqua", colors: ["#345da7", "#d4deef", "#062b48", "#5565e8", "#38ccb2"] },
-  { name: "retro", label: "Retro", colors: ["#fff3e0", "#6d4c41", "#ffcc80", "#5d4037", "#f35248"] }
+  { name: "light", label: "Light", colors: ["#ffffff", "#17305b", "#dfe7fb", "#3347b8", "#5565e8"] },
+  { name: "dark", label: "Dark", colors: ["#011627", "#7f93ad", "#062b48", "#7b8cff", "#18f2e5"] }
 ];
 
 const themePresets: Record<
@@ -13,30 +11,48 @@ const themePresets: Record<
   Pick<NonNullable<ThemeOption["tokens"]>, "tertiaryContent" | "gradientStart" | "gradientMid" | "gradientEnd">
 > = {
   light: {
-    tertiaryContent: "#6b7c93",
+    tertiaryContent: "#66738f",
     gradientStart: "#5565e8",
-    gradientMid: "#18f2e5",
-    gradientEnd: "#dbe3f7"
+    gradientMid: "#8aa3ff",
+    gradientEnd: "#eef3ff"
   },
   dark: {
-    tertiaryContent: "#99a1af",
-    gradientStart: "#18f2e5",
-    gradientMid: "#5cc0fe",
-    gradientEnd: "#4ea7ff"
-  },
-  aqua: {
-    tertiaryContent: "#d4deef",
-    gradientStart: "#00c1d4",
+    tertiaryContent: "#607b96",
+    gradientStart: "#0d6efd",
     gradientMid: "#18f2e5",
-    gradientEnd: "#ff6f61"
+    gradientEnd: "#0a3152"
   },
-  retro: {
-    tertiaryContent: "#8c6b5e",
-    gradientStart: "#ffab40",
-    gradientMid: "#f8d5a0",
-    gradientEnd: "#6d4c41"
+  signal: {
+    tertiaryContent: "#b8bec8",
+    gradientStart: "#f59e0b",
+    gradientMid: "#fbbf24",
+    gradientEnd: "#2a1f0f"
+  },
+  forest: {
+    tertiaryContent: "#9fc3aa",
+    gradientStart: "#14532d",
+    gradientMid: "#4ade80",
+    gradientEnd: "#0f1c14"
+  },
+  mineral: {
+    tertiaryContent: "#a8a29e",
+    gradientStart: "#7c2d12",
+    gradientMid: "#ea580c",
+    gradientEnd: "#231815"
   }
 };
+
+function resolveThemePreset(name: string) {
+  const normalizedName = name.toLowerCase();
+
+  if (normalizedName.includes("light")) return themePresets.light;
+  if (normalizedName.includes("dark")) return themePresets.dark;
+  if (normalizedName.includes("signal") || normalizedName.includes("amber")) return themePresets.signal;
+  if (normalizedName.includes("forest")) return themePresets.forest;
+  if (normalizedName.includes("mineral")) return themePresets.mineral;
+
+  return themePresets.dark;
+}
 
 function mapSocials(value: any): SocialLink[] {
   if (!value) return [];
@@ -70,7 +86,7 @@ function mapTheme(theme: any): ThemeOption | null {
   const name = theme?.slug || theme?.name;
   if (!name) return null;
   const normalizedName = String(name).toLowerCase();
-  const preset = themePresets[normalizedName] || themePresets.dark;
+  const preset = resolveThemePreset(normalizedName);
 
   const primary = theme?.primary || "#011627";
   const primaryContent = theme?.primary_content || "#607b96";

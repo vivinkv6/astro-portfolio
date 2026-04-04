@@ -40,10 +40,8 @@ export const footerLinks = [
 ];
 
 export const themes = [
-  { name: "light", label: "Light", colors: ["#fff", "#0d1a3b", "#dbe3f7", "#0d1a3b", "#5565e8"] },
-  { name: "dark", label: "Dark", colors: ["#011627", "#607b96", "#062b48", "#5565e8", "#18f2e5"] },
-  { name: "aqua", label: "Aqua", colors: ["#345da7", "#d4deef", "#062b48", "#5565e8", "#38ccb2"] },
-  { name: "retro", label: "Retro", colors: ["#fff3e0", "#6d4c41", "#ffcc80", "#5d4037", "#f35248"] }
+  { name: "light", label: "Light", colors: ["#ffffff", "#17305b", "#dfe7fb", "#3347b8", "#5565e8"] },
+  { name: "dark", label: "Dark", colors: ["#011627", "#7f93ad", "#062b48", "#7b8cff", "#18f2e5"] }
 ];
 
 export const skillCategories: SkillCategory[] = [

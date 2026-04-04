@@ -50,4 +50,4 @@ Because this Astro app is built as a static site inside GitHub Actions, add thes
 
 `STRAPI_TOKEN` is optional and is not required for the current deployment flow because this frontend can read public Strapi content without authentication.
 
-This image serves the static site over port `4321` inside the container. In Coolify, set the exposed port to `4321`.
+This image serves the static site over port `80` inside the container. In Coolify, set the exposed port to `80`.

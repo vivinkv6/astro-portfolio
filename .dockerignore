@@ -6,6 +6,4 @@ dist
 .env
 .env.*
 !.env.example
-Dockerfile
-docker-compose.ghcr.yml
 npm-debug.log*

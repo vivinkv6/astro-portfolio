@@ -13,43 +13,35 @@ npm run check
 npm run build
 ```
 
-## GHCR deployment flow
+## GHCR deployment
 
-This repo now publishes a production image to GitHub Container Registry from [`.github/workflows/docker-ghcr.yml`](./.github/workflows/docker-ghcr.yml).
+This repo is set up to build the production image in GitHub Actions and push it to GitHub Container Registry.
 
-On every push to `master`, GitHub Actions will:
+On every push to `master`, the workflow in [`.github/workflows/docker-ghcr.yml`](./.github/workflows/docker-ghcr.yml):
 
-1. build the Astro site inside Docker
-2. package the generated `dist/` output into a lightweight Nginx image
-3. push it to `ghcr.io/vivinkv6/astro-portfolio`
-4. optionally trigger Coolify to pull and restart if `COOLIFY_WEBHOOK` and `COOLIFY_TOKEN` are configured as GitHub Actions secrets
+1. builds the Astro site inside Docker
+2. packages the generated `dist/` output into a small Nginx image
+3. pushes the image to `ghcr.io/vivinkv6/astro-portfolio`
+4. triggers the Coolify deploy hook if the required secrets are configured
 
-Useful image tags:
+Configure these GitHub repository variables:
 
-- `ghcr.io/vivinkv6/astro-portfolio:latest`
-- `ghcr.io/vivinkv6/astro-portfolio:master`
-- `ghcr.io/vivinkv6/astro-portfolio:sha-<commit>`
+- `PUBLIC_SITE_URL`
+- `STRAPI_API_URL`
 
-## Coolify setup
-
-You can deploy this in Coolify with either:
-
-1. a `Docker Image` resource pointing at `ghcr.io/vivinkv6/astro-portfolio:latest`
-2. a Docker Compose resource using [`docker-compose.ghcr.yml`](./docker-compose.ghcr.yml)
-
-If the package is private, configure `ghcr.io` credentials in Coolify with a GitHub token that has `read:packages`.
-
-For automatic redeploys after each successful image push, add these GitHub Actions secrets in this repository:
+Configure these GitHub repository secrets:
 
 - `COOLIFY_WEBHOOK`
 - `COOLIFY_TOKEN`
+- `STRAPI_TOKEN`
 
-Because this Astro app is built as a static site inside GitHub Actions, add these GitHub repository values for the Docker build too:
+`STRAPI_TOKEN` can be left empty if your frontend only reads public Strapi content.
 
-- Repository variables: `PUBLIC_SITE_URL`, `STRAPI_API_URL`
+## Coolify
 
-`STRAPI_TOKEN` is optional and is not required for the current deployment flow because this frontend can read public Strapi content without authentication.
+Use a `Docker Image` resource in Coolify that points to the GHCR image for this repository.
 
-This image serves the static site over port `80` inside the container. In Coolify, set the exposed port to `80`.
+- Image: `ghcr.io/vivinkv6/astro-portfolio:latest`
+- Internal port: `80`
 
-When using `docker-compose.ghcr.yml` in Coolify, the service should stay on internal container port `80` only. Do not publish it to a host port like `4321:80` unless you intentionally want to access it directly outside Coolify. Let Coolify's proxy route the domain to the container instead.
+Coolify should only pull and run the prebuilt image. The server does not need to build the Astro app locally, which avoids the long build times and RAM spikes you were seeing.

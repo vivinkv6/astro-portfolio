@@ -1,15 +1,17 @@
-name: Publish Docker Image
+name: Publish GHCR Image
 
 on:
   push:
     branches:
       - master
-    tags:
-      - "v*"
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
+
+concurrency:
+  group: ghcr-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docker:
@@ -47,7 +49,6 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
-            type=ref,event=tag
             type=sha
 
       - name: Build and push image
@@ -59,18 +60,19 @@ jobs:
           build-args: |
             PUBLIC_SITE_URL=${{ vars.PUBLIC_SITE_URL }}
             STRAPI_API_URL=${{ vars.STRAPI_API_URL }}
+            STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Trigger Coolify deployment
-        if: ${{ env.COOLIFY_WEBHOOK != '' && env.COOLIFY_TOKEN != '' }}
+        if: ${{ secrets.COOLIFY_WEBHOOK != '' && secrets.COOLIFY_TOKEN != '' }}
         env:
           COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
         run: |
           webhook="$(printf '%s' "$COOLIFY_WEBHOOK" | tr -d '\r\n')"
           token="$(printf '%s' "$COOLIFY_TOKEN" | tr -d '\r\n')"
-          curl --fail --request GET "$webhook" \
+          curl --fail --show-error --silent --request GET "$webhook" \
             --header "Authorization: Bearer $token"

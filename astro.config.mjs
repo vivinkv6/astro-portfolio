@@ -3,6 +3,7 @@ import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  trailingSlash: "never",
   redirects: {
     "/blogs/8452068674138656619": "/blogs/best-headless-cms-platforms-modern-web-development",
     "/blogs/3935986206409354173": "/blogs/top-ai-coding-tools-ides-developer-productivity-2025",

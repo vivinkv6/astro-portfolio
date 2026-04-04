@@ -1,6 +1,8 @@
 import type { ListingPageData, PaginatedResult, Project, ProjectTechnology } from "@/types/content";
 import { getCollectionItems, getSingleItem, getStrapiClient, inferProjectSlug, isStrapiConfigured, normalizeMedia, normalizeSeo, safeStrapi } from "@/lib/strapi";
 
+const PROJECTS_FETCH_PAGE_SIZE = 6;
+
 function mapProject(project: any): Project {
   const screenshot = normalizeMedia(project.screenshot);
   const technologies: ProjectTechnology[] = Array.isArray(project.skills)
@@ -74,30 +76,50 @@ export async function fetchProjects(): Promise<Project[]> {
   const client = getStrapiClient();
   if (!client) return [];
 
-  const response = await safeStrapi(
-    () =>
-      client.collection("projects").find({
-        sort: ["priority:asc", "createdAt:desc"],
-        populate: {
-          screenshot: true,
-          seo: {
-            populate: {
-              og_image: true
+  const projects: Project[] = [];
+  let page = 1;
+  let pageCount = 1;
+
+  do {
+    const response = await safeStrapi(
+      () =>
+        client.collection("projects").find({
+          filters: {
+            hide_project: {
+              $ne: true
             }
           },
-          skills: {
-            populate: {
-              logo: true
+          sort: ["priority:asc", "createdAt:desc"],
+          pagination: {
+            page,
+            pageSize: PROJECTS_FETCH_PAGE_SIZE
+          },
+          populate: {
+            screenshot: true,
+            seo: {
+              populate: {
+                og_image: true
+              }
+            },
+            skills: {
+              populate: {
+                logo: true
+              }
             }
           }
-        }
-      }),
-    null
-  );
+        }),
+      null
+    );
 
-  return getCollectionItems(response)
-    .filter((project: any) => project?.hide_project !== true)
-    .map(mapProject)
+    if (!response) break;
+
+    projects.push(...getCollectionItems(response).map(mapProject));
+    const meta = (response as any)?.meta?.pagination;
+    pageCount = meta?.pageCount || 1;
+    page += 1;
+  } while (page <= pageCount);
+
+  return projects
     .sort((left, right) => {
       const priorityDiff = (left.priority ?? 999) - (right.priority ?? 999);
       if (priorityDiff !== 0) return priorityDiff;

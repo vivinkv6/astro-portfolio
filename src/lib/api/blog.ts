@@ -12,6 +12,8 @@ import {
   safeStrapi
 } from "@/lib/strapi";
 
+const BLOGS_FETCH_PAGE_SIZE = 6;
+
 function mapBlog(post: any): BlogPost {
   const featuredImage = normalizeMedia(post.featured_image);
   const bannerImage = normalizeMedia(post.banner_image);
@@ -72,38 +74,55 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
   const client = getStrapiClient();
   if (!client) return [];
 
-  const response = await safeStrapi(
-    () =>
-      client.collection("blogs").find({
-        filters: {
-          publishedAt: {
-            $notNull: true
-          }
-        },
-        sort: ["published_date:desc", "createdAt:desc"],
-        populate: {
-          featured_image: true,
-          banner_image: true,
-          sections: {
-            populate: {
-              image: true
+  const blogs: BlogPost[] = [];
+  let page = 1;
+  let pageCount = 1;
+
+  do {
+    const response = await safeStrapi(
+      () =>
+        client.collection("blogs").find({
+          filters: {
+            publishedAt: {
+              $notNull: true
             }
           },
-          seo: {
-            populate: {
-              og_image: true
+          sort: ["published_date:desc", "createdAt:desc"],
+          pagination: {
+            page,
+            pageSize: BLOGS_FETCH_PAGE_SIZE
+          },
+          populate: {
+            featured_image: true,
+            banner_image: true,
+            sections: {
+              populate: {
+                image: true
+              }
+            },
+            seo: {
+              populate: {
+                og_image: true
+              }
             }
           }
-        }
-      }),
-    null
-  );
+        }),
+      null
+    );
 
-  return byNewest(
-    getCollectionItems(response)
-      .filter((post: any) => Boolean(post?.publishedAt))
-      .map(mapBlog)
-  );
+    if (!response) break;
+
+    blogs.push(
+      ...getCollectionItems(response)
+        .filter((post: any) => Boolean(post?.publishedAt))
+        .map(mapBlog)
+    );
+    const meta = (response as any)?.meta?.pagination;
+    pageCount = meta?.pageCount || 1;
+    page += 1;
+  } while (page <= pageCount);
+
+  return byNewest(blogs);
 }
 
 export async function fetchBlogBySlug(slug: string) {

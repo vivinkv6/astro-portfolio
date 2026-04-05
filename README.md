@@ -2,7 +2,7 @@
 
 ## Local development
 
-```bash
+```bash 
 npm run dev
 ```
 

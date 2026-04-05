@@ -18,23 +18,23 @@ RUN npm ci
 
 COPY . .
 
-# Force rebuild
 RUN echo "Cache bust: $CACHE_BUST"
-
 RUN npm run build
 
 
 # ----------- SERVE STAGE -----------
 FROM nginx:alpine
 
-# Install curl for healthcheck ✅
 RUN apk add --no-cache curl
 
-# Copy Astro build output
+# Security headers as a shared include — must land before default.conf
+# so the include path exists when nginx validates the config on startup.
+COPY nginx/security_headers.conf /etc/nginx/conf.d/security_headers.conf
+COPY nginx/default.conf          /etc/nginx/conf.d/default.conf
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port
 EXPOSE 80
 
-# Healthcheck for Coolify ✅
-HEALTHCHECK CMD curl -f http://localhost || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost/health || exit 1

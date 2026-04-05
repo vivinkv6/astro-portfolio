@@ -69,7 +69,7 @@ const structuredData = [
         ) : null}
       </header>
 
-      <div class="bg-primary/60 flex overflow-hidden rounded-2xl p-4 md:p-6">
+      <div class="bg-primary/60 overflow-hidden rounded-2xl p-2 sm:p-3 md:p-4">
         <img
           src={blog.bannerImage || blog.coverImage || "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop"}
           alt={blog.title}
@@ -79,7 +79,7 @@ const structuredData = [
           width="1200"
           height="675"
           sizes="(min-width: 1024px) 56rem, 100vw"
-          class="aspect-video w-full object-contain"
+          class="max-h-[70vh] w-full rounded-xl object-contain sm:max-h-[32rem] md:max-h-[36rem]"
         />
       </div>
 
@@ -91,7 +91,7 @@ const structuredData = [
             <section class="space-y-5">
               {section.title ? <h2>{section.title}</h2> : null}
               {section.image ? (
-                <div class="bg-primary/50 flex overflow-hidden rounded-2xl p-4">
+                <div class="bg-primary/50 overflow-hidden rounded-2xl p-2 sm:p-3 md:p-4">
                   <img
                     src={section.image}
                     alt={section.title || blog.title}
@@ -100,7 +100,7 @@ const structuredData = [
                     width="1200"
                     height="675"
                     sizes="(min-width: 1024px) 56rem, 100vw"
-                    class="aspect-video w-full object-contain"
+                    class="max-h-[65vh] w-full rounded-xl object-contain sm:max-h-[28rem] md:max-h-[32rem]"
                   />
                 </div>
               ) : null}

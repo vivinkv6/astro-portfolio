@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
 import { getEducationPageData, getExperiencePageData, getSiteConfig, getSkillsPageData } from "@/lib/content";
 import { createPersonSchema, createWebsiteSchema } from "@/lib/schema";
-import { siteUrl } from "@/lib/utils";
+import { normalizePath, siteUrl, toAbsoluteUrl } from "@/lib/utils";
 import type { ThemeOption } from "@/types/content";
 
 interface Props {
@@ -51,12 +51,11 @@ const {
 } = Astro.props;
 
 function normalizeCanonical(pathname: string) {
-  const normalizedPath = pathname !== "/" ? pathname.replace(/\/+$/, "") : "";
-  return new URL(normalizedPath || "/", siteUrl).toString().replace(/\/$/, normalizedPath ? "" : "/");
+  return toAbsoluteUrl(pathname);
 }
 
 const canonical = normalizeCanonical(Astro.url.pathname);
-const socialImage = new URL(image, siteUrl).toString();
+const socialImage = new URL(image, `${siteUrl}/`).toString();
 const pathname = Astro.url.pathname;
 const defaultTheme = site.themes.find((theme) => theme.isDefault)?.name || "dark";
 const faviconUrl =
@@ -99,6 +98,13 @@ const themeInitScript = `(() => {
   document.documentElement.setAttribute("data-theme", storedTheme);
 })();`;
 const linkNormalizationScript = `(() => {
+  const normalizePath = (path) => {
+    if (!path) return "/";
+    const [pathnameWithSearch, hash = ""] = path.split("#");
+    const [pathname = "/", search = ""] = pathnameWithSearch.split("?");
+    const normalizedPathname = pathname === "/" ? "/" : pathname.replace(/\\/+$/, "") || "/";
+    return normalizedPathname + (search ? "?" + search : "") + (hash ? "#" + hash : "");
+  };
   const currentHost = window.location.hostname.toLowerCase();
   const getApexDomain = (hostname) => {
     const parts = hostname.split(".").filter(Boolean);
@@ -108,7 +114,12 @@ const linkNormalizationScript = `(() => {
 
   document.querySelectorAll("a[href]").forEach((anchor) => {
     const rawHref = anchor.getAttribute("href");
-    if (!rawHref || rawHref.startsWith("/") || rawHref.startsWith("#") || rawHref.startsWith("mailto:") || rawHref.startsWith("tel:")) {
+    if (!rawHref || rawHref.startsWith("#") || rawHref.startsWith("mailto:") || rawHref.startsWith("tel:")) {
+      return;
+    }
+
+    if (rawHref.startsWith("/")) {
+      anchor.setAttribute("href", normalizePath(rawHref));
       return;
     }
 
@@ -118,7 +129,7 @@ const linkNormalizationScript = `(() => {
       const incomingApex = getApexDomain(incomingHost);
 
       if (incomingHost === currentHost || incomingApex === currentApex) {
-        anchor.setAttribute("href", (url.pathname || "/") + url.search + url.hash);
+        anchor.setAttribute("href", normalizePath((url.pathname || "/") + url.search + url.hash));
       }
     } catch {
       // Ignore malformed hrefs and leave them untouched.
@@ -157,7 +168,7 @@ const schemaGraph = [...baseSchemas, ...pageSchemas];
     <meta property="twitter:description" content={twitterDescription} />
     <meta property="twitter:image" content={socialImage} />
     <link rel="icon" type="image/x-icon" href={faviconUrl} />
-    {preloadImage ? <link rel="preload" as="image" href={new URL(preloadImage, siteUrl).toString()} /> : null}
+    {preloadImage ? <link rel="preload" as="image" href={new URL(preloadImage, `${siteUrl}/`).toString()} /> : null}
     {dynamicThemeCss ? <style is:inline set:html={dynamicThemeCss}></style> : null}
     <script is:inline set:html={themeInitScript}></script>
     {headSnippet?.isHtml ? <Fragment set:html={headSnippet.content} /> : null}

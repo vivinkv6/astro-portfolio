@@ -1,4 +1,22 @@
-export const siteUrl = import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321";
+function trimTrailingSlash(value: string) {
+  return value.replace(/\/+$/, "");
+}
+
+export const siteUrl = trimTrailingSlash(import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321");
+
+export function normalizePath(path: string) {
+  if (!path) return "/";
+
+  const [pathnameWithSearch, hash = ""] = path.split("#");
+  const [pathname = "/", search = ""] = pathnameWithSearch.split("?");
+  const normalizedPathname = pathname === "/" ? "/" : pathname.replace(/\/+$/, "") || "/";
+
+  return `${normalizedPathname}${search ? `?${search}` : ""}${hash ? `#${hash}` : ""}`;
+}
+
+export function toAbsoluteUrl(path: string) {
+  return new URL(normalizePath(path), `${siteUrl}/`).toString();
+}
 
 export function slugify(value: string) {
   return value

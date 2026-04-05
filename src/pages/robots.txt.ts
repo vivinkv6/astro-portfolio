@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-export const siteUrl = import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321";
+import { siteUrl } from "@/lib/utils";
 
 
 export const GET: APIRoute = () =>

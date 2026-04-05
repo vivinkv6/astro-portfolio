@@ -1,9 +1,9 @@
-import { siteUrl } from "@/lib/utils";
+import { toAbsoluteUrl as toNormalizedAbsoluteUrl } from "@/lib/utils";
 
 const XML_HEADERS = { "Content-Type": "application/xml; charset=utf-8" };
 
 export function toAbsoluteUrl(path: string) {
-  return `${siteUrl}${path}`;
+  return toNormalizedAbsoluteUrl(path);
 }
 
 export function getSitemapTimestamp() {

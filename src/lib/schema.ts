@@ -1,4 +1,4 @@
-import { siteUrl } from "@/lib/utils";
+import { siteUrl, toAbsoluteUrl } from "@/lib/utils";
 import type { BlogPost, EducationItem, ExperienceItem, Project, SiteConfig, SkillCategory } from "@/types/content";
 
 type JsonLd = Record<string, unknown>;
@@ -7,10 +7,6 @@ type BreadcrumbInput = {
   name: string;
   path: string;
 };
-
-function toAbsoluteUrl(path: string) {
-  return new URL(path, siteUrl).toString();
-}
 
 export function createWebsiteSchema(site: SiteConfig): JsonLd {
   return {

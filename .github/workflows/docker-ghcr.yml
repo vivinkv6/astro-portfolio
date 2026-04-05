@@ -16,6 +16,7 @@ concurrency:
 jobs:
   docker:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
@@ -47,10 +48,10 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=sha
+            type=raw,value=latest
+            type=raw,value=${{ github.run_number }}
 
+      # 🔥 KEY FIX: cache bust for Astro rebuild
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
@@ -61,6 +62,7 @@ jobs:
             PUBLIC_SITE_URL=${{ vars.PUBLIC_SITE_URL }}
             STRAPI_API_URL=${{ vars.STRAPI_API_URL }}
             STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
+            CACHE_BUST=${{ github.run_id }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -78,5 +80,9 @@ jobs:
 
           webhook="$(printf '%s' "$COOLIFY_WEBHOOK" | tr -d '\r\n')"
           token="$(printf '%s' "$COOLIFY_TOKEN" | tr -d '\r\n')"
+
+          echo "🚀 Triggering Coolify deployment..."
           curl --fail --show-error --silent --request GET "$webhook" \
             --header "Authorization: Bearer $token"
+
+          echo "✅ Coolify deploy triggered"

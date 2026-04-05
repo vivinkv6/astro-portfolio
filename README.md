@@ -33,9 +33,6 @@ Configure these GitHub repository secrets:
 
 - `COOLIFY_WEBHOOK`
 - `COOLIFY_TOKEN`
-- `STRAPI_TOKEN`
-
-`STRAPI_TOKEN` can be left empty if your frontend only reads public Strapi content.
 
 ## Coolify
 

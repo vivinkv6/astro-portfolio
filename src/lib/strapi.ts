@@ -27,14 +27,11 @@ const baseURL = rawBaseURL
   : "";
 const publicSiteUrl = import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321";
 
-const authToken = import.meta.env.STRAPI_TOKEN;
-
 export const isStrapiConfigured = Boolean(baseURL);
 
 const client = isStrapiConfigured
   ? strapi({
-      baseURL,
-      ...(authToken ? { auth: authToken } : {})
+      baseURL
     })
   : null;
 

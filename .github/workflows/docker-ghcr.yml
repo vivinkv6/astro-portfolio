@@ -61,7 +61,6 @@ jobs:
           build-args: |
             PUBLIC_SITE_URL=${{ vars.PUBLIC_SITE_URL }}
             STRAPI_API_URL=${{ vars.STRAPI_API_URL }}
-            STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }}
             CACHE_BUST=${{ github.run_id }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

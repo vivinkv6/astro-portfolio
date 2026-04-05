@@ -106,11 +106,6 @@ const linkNormalizationScript = `(() => {
     return normalizedPathname + (search ? "?" + search : "") + (hash ? "#" + hash : "");
   };
   const currentHost = window.location.hostname.toLowerCase();
-  const getApexDomain = (hostname) => {
-    const parts = hostname.split(".").filter(Boolean);
-    return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
-  };
-  const currentApex = getApexDomain(currentHost);
 
   document.querySelectorAll("a[href]").forEach((anchor) => {
     const rawHref = anchor.getAttribute("href");
@@ -126,9 +121,8 @@ const linkNormalizationScript = `(() => {
     try {
       const url = new URL(rawHref, window.location.origin);
       const incomingHost = url.hostname.toLowerCase();
-      const incomingApex = getApexDomain(incomingHost);
 
-      if (incomingHost === currentHost || incomingApex === currentApex) {
+      if (incomingHost === currentHost) {
         anchor.setAttribute("href", normalizePath((url.pathname || "/") + url.search + url.hash));
       }
     } catch {

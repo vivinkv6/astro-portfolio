@@ -124,10 +124,8 @@ export function normalizeHref(value?: string | null) {
       const publicUrl = new URL(publicSiteUrl);
       const incomingHost = url.hostname.toLowerCase();
       const publicHost = publicUrl.hostname.toLowerCase();
-      const sameHost = incomingHost === publicHost;
-      const sameApexDomain = getApexDomain(incomingHost) === getApexDomain(publicHost);
 
-      if (sameHost || sameApexDomain) {
+      if (incomingHost === publicHost) {
         return `${url.pathname || "/"}${url.search}${url.hash}`;
       }
     } catch {
@@ -139,12 +137,6 @@ export function normalizeHref(value?: string | null) {
 
   return value.startsWith("/") ? value : `/${value}`;
 }
-
-function getApexDomain(hostname: string) {
-  const parts = hostname.split(".").filter(Boolean);
-  return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
-}
-
 export function plainText(value: any) {
   if (typeof value !== "string") return "";
 

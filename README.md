@@ -6,7 +6,7 @@
 npm run dev
 ```
 
-Checks:
+Checks: 
 
 ```bash
 npm run check

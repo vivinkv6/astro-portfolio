@@ -228,6 +228,7 @@ export interface Project {
   title: string;
   shortDescription: string;
   longDescription?: string;
+  contentHtml?: string;
   cover: string;
   livePreview?: string;
   githubLink?: string;

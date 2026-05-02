@@ -32,6 +32,7 @@ function mapProject(project: any): Project {
     slug: inferProjectSlug(project),
     shortDescription: project.short_description || "",
     longDescription: project.short_description || "",
+    contentHtml: project.content || undefined,
     cover: screenshot?.url || "/assets/images/hero-image.png",
     livePreview: project.live_url || undefined,
     githubLink: project.source_code_link || undefined,
@@ -85,9 +86,16 @@ export async function fetchProjects(): Promise<Project[]> {
       () =>
         client.collection("projects").find({
           filters: {
-            hide_project: {
-              $ne: true
-            }
+            $or: [
+              {
+                hide_project: {
+                  $ne: true
+                }
+              },
+              {
+                hide_project: null
+              }
+            ]
           },
           sort: ["priority:asc", "createdAt:desc"],
           pagination: {
@@ -143,9 +151,16 @@ export async function fetchProjectsPaginated(page: number, pageSize: number): Pr
     () =>
       client.collection("projects").find({
         filters: {
-          hide_project: {
-            $ne: true
-          }
+          $or: [
+            {
+              hide_project: {
+                $ne: true
+              }
+            },
+            {
+              hide_project: null
+            }
+          ]
         },
         sort: ["priority:asc", "createdAt:desc"],
         pagination: {

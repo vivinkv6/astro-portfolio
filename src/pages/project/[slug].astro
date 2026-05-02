@@ -2,6 +2,7 @@
 import { GithubIcon, PreviewIcon } from "@/utils/icons";
 import { getAllProjects, getProjectBySlug, getProjectPageData, getSiteConfig } from "@/lib/content";
 import { createBreadcrumbSchema, createSoftwareSourceCodeSchema } from "@/lib/schema";
+import { formatDate, normalizeRichTextHeadings } from "@/lib/utils";
 import { resolveSeo } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
@@ -20,9 +21,10 @@ if (!project) {
 }
 
 const [site, projectPage] = await Promise.all([getSiteConfig(), getProjectPageData()]);
-const seo = resolveSeo(site, project.seo || projectPage.seo, {
+const normalizedProjectContentHtml = normalizeRichTextHeadings(project.contentHtml);
+const seo = resolveSeo(site, project.seo, {
   title: `${project.title} | ${site.personName}`,
-  description: project.shortDescription,
+  description: project.contentHtml ? project.contentHtml.replace(/<[^>]*>/g, "").slice(0, 155) : project.shortDescription,
   image: project.cover
 });
 const structuredData = [
@@ -47,55 +49,57 @@ const structuredData = [
   twitterDescription={seo.twitterDescription}
   structuredData={structuredData}
 >
-  <section class="py-16">
+  <article class="py-16">
     <div class="section-shell max-w-4xl">
-      <div class="mb-8">
-        <a href="/project" class="text-accent text-sm">Back to projects</a>
-        <h1 class="text-neutral mt-5 text-4xl font-bold">{project.title}</h1>
-        <p class="text-primary-content mt-4 text-lg leading-8">{project.shortDescription}</p>
-      </div>
-      <div class="bg-primary/40 border-border overflow-hidden rounded-3xl border p-6">
+      <header class="mb-8">
+        <a href="/project" class="text-accent text-sm">&larr; Back to projects</a>
+        <h1 class="text-neutral mt-2 text-3xl font-bold md:text-4xl">{project.title}</h1>
+        {project.technologies?.length ? (
+          <div class="mt-4 flex flex-wrap gap-2">
+            {project.technologies.map((tech) => (
+              <span class="bg-secondary border-border inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs">
+                {tech.icon ? <img src={tech.icon} alt={tech.name} class="h-3.5 w-3.5 object-contain" /> : <span class="text-accent font-semibold">{tech.name.charAt(0)}</span>}
+                <span class="text-primary-content">{tech.name}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </header>
+
+      <div>
         <img
           src={project.cover}
           alt={project.title}
           loading="eager"
           fetchpriority="high"
           decoding="async"
-          width="1280"
-          height="800"
-          class="aspect-[16/10] w-full object-contain"
+          width="1200"
+          height="675"
+          sizes="(min-width: 1024px) 56rem, 100vw"
+          class="max-h-[70vh] w-full object-contain sm:max-h-[32rem] md:max-h-[36rem]"
         />
       </div>
-      <div class="mt-8 flex flex-wrap gap-3">
-        {project.livePreview ? (
-          <a href={project.livePreview} target="_blank" rel="noreferrer" class="bg-accent inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-[#00071E]">
-            <PreviewIcon className="h-4 w-4" />
-            Live preview
-          </a>
-        ) : null}
-        {project.githubLink ? (
-          <a href={project.githubLink} target="_blank" rel="noreferrer" class="bg-secondary text-neutral border-border inline-flex items-center gap-2 rounded-lg border px-5 py-3 text-sm">
-            <GithubIcon className="h-4 w-4" />
-            GitHub
-          </a>
-        ) : null}
-      </div>
-      <div class="rich-copy mt-10 space-y-6">
-        <p>{project.longDescription || project.shortDescription}</p>
-        {project.technologies?.length ? (
-          <>
-            <h2>Technology Stack</h2>
-            <div class="mt-4 flex flex-wrap gap-3">
-              {project.technologies.map((tech) => (
-                <div class="bg-primary/70 border-border inline-flex items-center gap-2 rounded-full border px-3 py-2 shadow-sm">
-                  {tech.icon ? <img src={tech.icon} alt={tech.name} class="h-5 w-5 object-contain" /> : <span class="text-accent text-sm font-semibold">{tech.name.charAt(0)}</span>}
-                  <span class="text-primary-content text-sm">{tech.name}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : null}
-      </div>
+
+      {(project.livePreview || project.githubLink) ? (
+        <div class="mt-8 flex flex-wrap gap-3">
+          {project.livePreview ? (
+            <a href={project.livePreview} target="_blank" rel="noreferrer" class="bg-accent inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-[#00071E]">
+              <PreviewIcon className="h-4 w-4" />
+              Live preview
+            </a>
+          ) : null}
+          {project.githubLink ? (
+            <a href={project.githubLink} target="_blank" rel="noreferrer" class="bg-secondary text-neutral border-border inline-flex items-center gap-2 rounded-lg border px-5 py-3 text-sm">
+              <GithubIcon className="h-4 w-4" />
+              GitHub
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
+      {normalizedProjectContentHtml ? (
+        <div class="rich-copy mt-12 space-y-6" set:html={normalizedProjectContentHtml}></div>
+      ) : null}
     </div>
-  </section>
+  </article>
 </BaseLayout>
